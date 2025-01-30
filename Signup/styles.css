@@ -1,0 +1,32 @@
+html,
+body {
+  height: 100%;
+}
+
+.form-signin {
+  max-width: 500px;
+  padding: 2rem;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin .firstName {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.form-signin .lastName {
+  border-radius: 0;
+}
+
+.form-signin .email {
+  border-radius: 0;
+}
+
+.form-signin .password {
+  margin-bottom: 10px;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
