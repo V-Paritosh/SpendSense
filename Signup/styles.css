@@ -36,6 +36,16 @@ body {
   border-top-right-radius: 0 !important;
 }
 
+.password-toggle-btn {
+  border: none;
+  background: transparent;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
 .btn {
   background-color: #5e766c !important;
 }
