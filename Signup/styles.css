@@ -25,7 +25,7 @@ body {
   border-radius: 0;
 }
 
-.form-signin input[type="password"] {
+.form-signin .password {
   margin-bottom: 10px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
