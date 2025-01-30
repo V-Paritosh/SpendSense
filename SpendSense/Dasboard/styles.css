@@ -1,0 +1,24 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+.sidebar {
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  width: 280px;
+}
+
+.title {
+  margin-bottom: 0 !important;
+}
+
+.content {
+  margin-left: 280px;
+  padding: 1rem;
+}
