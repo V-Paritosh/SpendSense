@@ -17,19 +17,19 @@ body {
   z-index: 2;
 }
 
-.form-signin .email {
+#email {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.form-signin .password {
+#password {
   margin-bottom: 10px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
 }
 
-.password-toggle-btn {
+#passwordToggleBtn {
   border: none;
   background: transparent;
   position: absolute;
