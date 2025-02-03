@@ -31,3 +31,30 @@ body {
 .btn {
   background-color: #5e766c !important;
 }
+
+@media (max-width: 1000px) {
+  .sidebar {
+    width: 60px;
+  }
+
+  .sidebar .d-flex {
+    justify-content: center;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .title {
+    display: none;
+  }
+
+  .nav-link {
+    display: none !important;
+  }
+
+  .content {
+    margin-left: 60px;
+  }
+}
