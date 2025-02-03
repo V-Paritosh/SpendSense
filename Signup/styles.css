@@ -17,23 +17,29 @@ body {
   z-index: 2;
 }
 
-.form-signin .firstName {
+#firstName {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
 
-.form-signin .lastName {
+#lastName, #email {
   border-radius: 0;
 }
 
-.form-signin .email {
-  border-radius: 0;
-}
-
-.form-signin .password {
+#password {
   margin-bottom: 10px;
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+#passwordToggleBtn {
+  border: none;
+  background: transparent;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
 }
 
 .btn {
