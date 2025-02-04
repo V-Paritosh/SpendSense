@@ -16,7 +16,15 @@ body {
   background-color: #161c21;
   color: #fff;
   padding: 1rem;
-  width: 280px;
+  width: 250px;
+}
+
+.active {
+    background-color: #5e766c !important;
+  }
+
+.settings {
+  padding-left: 5px;
 }
 
 .title {
@@ -24,7 +32,7 @@ body {
 }
 
 .content {
-  margin-left: 280px;
+  margin-left: 250px;
   padding: 1rem;
 }
 
@@ -50,7 +58,24 @@ body {
     display: none;
   }
 
-  .nav-link {
+  .nav .nav-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .description {
+    display: none !important;
+  }
+
+  .settings {
     display: none !important;
   }
 
