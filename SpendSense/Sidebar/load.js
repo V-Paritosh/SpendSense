@@ -9,4 +9,4 @@ function load() {
   };
   x.send();
 }
-window.onload = load;
+window.onload = load();
