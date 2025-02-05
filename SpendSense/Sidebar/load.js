@@ -2,7 +2,7 @@ function load() {
   const x = new XMLHttpRequest();
   x.open(
     "GET",
-    "https://v-paritosh.github.io/SpendSense/SpendSense/Sidebar/index.html",
+    "../Sidebar/index.html",
     true
   );
 

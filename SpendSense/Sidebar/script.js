@@ -8,14 +8,14 @@ const waitForSidebar = setInterval(() => {
     console.log("Current Path:", currentPath);
 
     const navLinks = {
-      dashboard: "/SpendSense/SpendSense/Dashboard/index.html",
-      budget: "/SpendSense/SpendSense/Budget/index.html",
-      transactions: "/SpendSense/SpendSense/Transactions/index.html",
+      dashboard: "/SpendSense/Dashboard/index.html",
+      budget: "/SpendSense/Budget/index.html",
+      transactions: "/SpendSense/Transactions/index.html",
     };
 
     if (currentPath != "") {
       for (const id in navLinks) {
-        if (currentPath === navLinks[id]) {
+        if (currentPath.includes(navLinks[id])) {
           console.log(`Found active link: ${id}`);
           document.getElementById(id).classList.add("active");
         }
