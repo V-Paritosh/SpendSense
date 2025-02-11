@@ -65,6 +65,7 @@
         </li> -->
       </ul>
       <hr />
+      
       <div class="dropdown">
         <a
           href="#"
@@ -84,7 +85,7 @@
           <hr class="dropdown-divider" />
         </li> -->
           <li>
-            <a class="dropdown-item" id="signoutBtn">Sign out</a>
+            <button class="dropdown-item" id="signoutBtn">Sign out</button>
           </li>
         </ul>
       </div>
@@ -97,14 +98,21 @@
 
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      const signoutBtn = document.getElementById("signoutBtn")
-      signoutBtn?.addEventListener("click", async (event) => {
+     // Sign Out Functionality
+      document.getElementById("signoutBtn")?.addEventListener("click", async (event) => {
         event.preventDefault();
 
-        const { error } = await supabase.auth.signOut()
+        // Check if user is logged in
+        const { data: user } = await supabase.auth.getUser();
+        if (!user) {
+          alert("No user logged in.");
+          return;
+        }
 
+        // Sign out user
+        const { error } = await supabase.auth.signOut();
         if (error) {
-          alert(error);
+          alert("Error signing out: " + error.message);
         } else {
           window.location.href = "../../Login/index.html";
         }
