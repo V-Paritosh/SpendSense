@@ -5,10 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SpendSense | Dashboard</title>
 
-    <link rel="icon" type="image/png" href="../../img/favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="../../img/favicon/favicon.svg" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../img/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="../../img/favicon/favicon.svg"
+    />
     <link rel="shortcut icon" href="../../img/favicon/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="../../img/favicon/apple-touch-icon.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../../img/favicon/apple-touch-icon.png"
+    />
     <meta name="apple-mobile-web-app-title" content="SpendSense" />
     <link rel="manifest" href="../../img/favicon/site.webmanifest" />
 
@@ -29,6 +42,7 @@
       defer
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body>
@@ -45,7 +59,7 @@
           <div class="card shadow-sm">
             <div class="card-body">
               <h5 class="card-title">Networth</h5>
-              <p class="card-text">Total Networth: $0.00</p>
+              <p class="card-text" id="networth">Total Networth: $0.00</p>
             </div>
           </div>
         </div>
@@ -55,21 +69,11 @@
           <div class="card shadow-sm">
             <div class="card-body">
               <h5 class="card-title">Recent Expenses</h5>
-              <ul class="list-unstyled">
+              <ul class="list-unstyled" id="expenses">
                 <li>Groceries: $200</li>
                 <li>Rent: $1200</li>
                 <li>Utilities: $150</li>
               </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Assets Card -->
-        <div class="col">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">Assets</h5>
-              <p class="card-text">Total Assets: $5,000</p>
             </div>
           </div>
         </div>
@@ -79,7 +83,7 @@
           <div class="card shadow-sm">
             <div class="card-body">
               <h5 class="card-title">Debts</h5>
-              <p class="card-text">Total Debts: $2,000</p>
+              <p class="card-text" id="debts">Total Debts: $2,000</p>
             </div>
           </div>
         </div>
@@ -89,7 +93,7 @@
           <div class="card shadow-sm">
             <div class="card-body">
               <h5 class="card-title">Payments Due Soon</h5>
-              <ul class="list-unstyled">
+              <ul class="list-unstyled" id="payments">
                 <li>Credit Card Bill - Due in 5 days</li>
                 <li>Loan Payment - Due in 10 days</li>
               </ul>
