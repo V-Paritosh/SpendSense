@@ -1,46 +1,61 @@
-<body>
-  <div class="sidebar d-flex flex-column flex-shrink-0 p-3" id="sidebar">
-    <div class="d-flex align-items-center">
-      <img class="logo" src="../../img/SpendSense.png" width="50" height="50" />
-      <p class="fs-4 title">SpendSense</p>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
 
-    <hr />
-    <ul class="nav nav-pills flex-column mb-auto">
-      <li class="nav-item">
-        <a
-          href="../Dashboard/index.html"
-          id="dashboard"
-          class="nav-link link-light"
-          aria-current="page"
-        >
-          <span class="icon">
-            <i class="bi bi-house-door"></i>
-          </span>
-          <span class="description">Dashboard</span>
-        </a>
-      </li>
-      <li>
-        <a href="../Budget/index.html" id="budget" class="nav-link link-light">
-          <span class="icon">
-            <i class="bi bi-bar-chart"></i>
-          </span>
-          <span class="description">Budget</span>
-        </a>
-      </li>
-      <li>
-        <a
-          href="../Transactions/index.html"
-          id="transactions"
-          class="nav-link link-light"
-        >
-          <span class="icon">
-            <i class="bi bi-arrow-left-right"></i>
-          </span>
-          <span class="description">Transactions</span>
-        </a>
-      </li>
-      <!-- <li>
+  <body>
+    <div class="sidebar d-flex flex-column flex-shrink-0 p-3" id="sidebar">
+      <div class="d-flex align-items-center">
+        <img
+          class="logo"
+          src="../../img/SpendSense.png"
+          width="50"
+          height="50"
+        />
+        <p class="fs-4 title">SpendSense</p>
+      </div>
+
+      <hr />
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a
+            href="../Dashboard/index.html"
+            id="dashboard"
+            class="nav-link link-light"
+            aria-current="page"
+          >
+            <span class="icon">
+              <i class="bi bi-house-door"></i>
+            </span>
+            <span class="description">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="../Budget/index.html"
+            id="budget"
+            class="nav-link link-light"
+          >
+            <span class="icon">
+              <i class="bi bi-bar-chart"></i>
+            </span>
+            <span class="description">Budget</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="../Transactions/index.html"
+            id="transactions"
+            class="nav-link link-light"
+          >
+            <span class="icon">
+              <i class="bi bi-arrow-left-right"></i>
+            </span>
+            <span class="description">Transactions</span>
+          </a>
+        </li>
+        <!-- <li>
           <a href="#" class="nav-link link-light">
             <span class="icon">
               <i class="bi bi-Learn"></i>
@@ -48,28 +63,52 @@
             <span class="description">Learn</span>
           </a>
         </li> -->
-    </ul>
-    <hr />
-    <div class="dropdown">
-      <a
-        href="#"
-        class="d-flex align-items-center text-white text-decoration-none"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-      >
-        <span class="icon">
-          <i class="bi bi-gear"></i>
-        </span>
-        <strong class="settings text-white">User</strong>
-      </a>
-      <ul class="dropdown-menu text-small shadow">
-        <li><a class="dropdown-item" href="#">Settings</a></li>
+      </ul>
+      <hr />
+      <div class="dropdown">
+        <a
+          href="#"
+          class="d-flex align-items-center text-white text-decoration-none"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">
+            <i class="bi bi-gear"></i>
+          </span>
+          <strong class="settings text-white">User</strong>
+        </a>
+        <ul class="dropdown-menu text-small shadow">
+          <!-- <li><a class="dropdown-item" href="#">Settings</a></li>
         <li><a class="dropdown-item" href="#">Profile</a></li>
         <li>
           <hr class="dropdown-divider" />
-        </li>
-        <li><a class="dropdown-item" href="#">Sign out</a></li>
-      </ul>
+        </li> -->
+          <li>
+            <a class="dropdown-item" id="signoutBtn">Sign out</a>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const SUPABASE_URL = "https://egzhuriimugvkjiauphl.supabase.co";
+      const SUPABASE_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVnemh1cmlpbXVndmtqaWF1cGhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQwNzEzNjcsImV4cCI6MjAzOTY0NzM2N30.29e4s0hYCEB3e4m0GDB2WgSpEDbiJSSC4FOg5aU8ZOk";
+
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      const signoutBtn = document.getElementById("signoutBtn")
+      signoutBtn?.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const { error } = await supabase.auth.signOut()
+
+        if (error) {
+          alert(error);
+        } else {
+          window.location.href = "../../Login/index.html";
+        }
+      });
+    </script>
+  </body>
+</html>

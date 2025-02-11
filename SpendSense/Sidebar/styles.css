@@ -36,6 +36,14 @@ body {
   padding: 1rem;
 }
 
+.dropdown-item:focus, 
+.dropdown-item:active {
+  background-color: #5e766c!important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+
 @media (max-width: 1000px) {
   .sidebar {
     width: 60px;
