@@ -10,7 +10,7 @@ const loginBtn = document.getElementById("loginBtn");
 const passwordInput = document.getElementById("password");
 const passwordToggleBtn = document.getElementById("passwordToggleBtn");
 
-// Login event
+// Signup event
 signupBtn?.addEventListener("click", async (event) => {
   event.preventDefault();
 
