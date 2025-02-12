@@ -4,84 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SpendSense | Transactions</title>
+
+    <link rel="icon" type="image/png" href="../../img/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="../../img/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="../../img/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../../img/favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="SpendSense" />
+    <link rel="manifest" href="../../img/favicon/site.webmanifest" />
+    
     <link href="./styles.css" rel="stylesheet" />
+    <link href="../Sidebar/styles.css" rel="stylesheet" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
     <script defer src="./script.js"></script>
+    <script defer src="../Sidebar/load.js"></script>
+    <script defer src="../Sidebar/script.js"></script>
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
-    <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
-      <div class="d-flex align-items-center">
-        <img
-          class="logo me-2"
-          src="/img/SpendSense.png"
-          width="50"
-          height="50"
-        />
-        <p class="fs-4 title">SpendSense</p>
-      </div>
-
-      <hr />
-      <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item">
-          <a href="#" class="nav-link link-light" aria-current="page">
-            <svg class="bi pe-none me-2" width="16" height="16">
-              <use xlink:href="#home"></use>
-            </svg>
-            Dashboard
-          </a>
-        </li>
-        <li>
-          <a href="#" class="nav-link link-light">
-            <svg class="bi pe-none me-2" width="16" height="16">
-              <use xlink:href="#speedometer2"></use>
-            </svg>
-            Budget
-          </a>
-        </li>
-        <li>
-          <a href="#" class="nav-link active">
-            <svg class="bi pe-none me-2" width="16" height="16">
-              <use xlink:href="#speedometer2"></use>
-            </svg>
-            Transactions
-          </a>
-        </li>
-        <li>
-          <a href="#" class="nav-link link-light">
-            <svg class="bi pe-none me-2" width="16" height="16">
-              <use xlink:href="#table"></use>
-            </svg>
-            Learn
-          </a>
-        </li>
-      </ul>
-      <hr />
-      <div class="dropdown">
-        <a
-          href="#"
-          class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <strong class="UserName text-white">User</strong>
-        </a>
-        <ul class="dropdown-menu text-small shadow">
-          <li><a class="dropdown-item" href="#">Settings</a></li>
-          <li><a class="dropdown-item" href="#">Profile</a></li>
-          <li>
-            <hr class="dropdown-divider" />
-          </li>
-          <li><a class="dropdown-item" href="#">Sign out</a></li>
-        </ul>
-      </div>
-    </div>
+    <!-- Sidebar -->
+    <div id="sidebar"></div>
 
     <div class="content">
       <h2 class="text-center mb-4">Transactions</h2>
@@ -92,13 +44,13 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Income</h5>
-              <form id="income-form">
+              <form id="incomeForm">
                 <div class="mb-3">
                   <label class="form-label">Source</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="income-source"
+                    id="incomeSource"
                     required
                   />
                 </div>
@@ -107,11 +59,11 @@
                   <input
                     type="number"
                     class="form-control"
-                    id="income-amount"
+                    id="incomeAmount"
                     required
                   />
                 </div>
-                <button type="submit" class="btn text-white w-100">
+                <button type="submit" class="btn text-white w-100" id="incomeBtn">
                   Add Income
                 </button>
               </form>
@@ -124,13 +76,13 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Expenses</h5>
-              <form id="expenses-form">
+              <form id="expensesForm">
                 <div class="mb-3">
                   <label class="form-label">Category</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="expense-category"
+                    id="expenseCategory"
                     required
                   />
                 </div>
@@ -139,44 +91,12 @@
                   <input
                     type="number"
                     class="form-control"
-                    id="expense-amount"
+                    id="expenseAmount"
                     required
                   />
                 </div>
-                <button type="submit" class="btn text-white w-100">
+                <button type="submit" class="btn text-white w-100" id="expenseBtn">
                   Add Expense
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        <!-- Assets -->
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Assets</h5>
-              <form id="assets-form">
-                <div class="mb-3">
-                  <label class="form-label">Asset Name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="asset-name"
-                    required
-                  />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Value</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="asset-value"
-                    required
-                  />
-                </div>
-                <button type="submit" class="btn text-white w-100">
-                  Add Asset
                 </button>
               </form>
             </div>
@@ -188,13 +108,13 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Debts</h5>
-              <form id="debts-form">
+              <form id="debtsForm">
                 <div class="mb-3">
                   <label class="form-label">Debt Type</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="debt-type"
+                    id="debtType"
                     required
                   />
                 </div>
@@ -203,11 +123,11 @@
                   <input
                     type="number"
                     class="form-control"
-                    id="debt-amount"
+                    id="debtAmount"
                     required
                   />
                 </div>
-                <button type="submit" class="btn text-white w-100">
+                <button type="submit" class="btn text-white w-100" id="debtBtn">
                   Add Debt
                 </button>
               </form>
@@ -220,13 +140,13 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Payments Due</h5>
-              <form id="payments-form">
+              <form id="paymentsForm">
                 <div class="mb-3">
                   <label class="form-label">Payment Type</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="payment-type"
+                    id="paymentType"
                     required
                   />
                 </div>
@@ -235,7 +155,7 @@
                   <input
                     type="number"
                     class="form-control"
-                    id="payment-amount"
+                    id="paymentAmount"
                     required
                   />
                 </div>
@@ -244,11 +164,11 @@
                   <input
                     type="date"
                     class="form-control"
-                    id="payment-date"
+                    id="paymentDate"
                     required
                   />
                 </div>
-                <button type="submit" class="btn text-white w-100">
+                <button type="submit" class="btn text-white w-100" id="paymentBtn">
                   Add Payment
                 </button>
               </form>
@@ -276,26 +196,37 @@
           </div>
         </div>
 
-        
         <!-- Recurring Finances Section -->
-        <div class="col-12">
+        <!-- <div class="col-12">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Recurring Finances</h5>
+              <h5 class="card-title">Recurring Finances</h5> -->
 
               <!-- Recurring Income -->
-              <h6>Recurring Income</h6>
+              <!-- <h6>Recurring Income</h6>
               <form id="recurring-income-form" class="mb-3">
                 <div class="row g-3">
                   <div class="col-md-4">
-                    <input type="text" class="form-control" placeholder="Source" required />
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Source"
+                      required
+                    />
                   </div>
                   <div class="col-md-3">
-                    <input type="number" class="form-control" placeholder="Amount" required />
+                    <input
+                      type="number"
+                      class="form-control"
+                      placeholder="Amount"
+                      required
+                    />
                   </div>
                   <div class="col-md-3">
                     <select class="form-select" required>
-                      <option value="" disabled selected>Select Frequency</option>
+                      <option value="" disabled selected>
+                        Select Frequency
+                      </option>
                       <option value="Daily">Daily</option>
                       <option value="Weekly">Weekly</option>
                       <option value="Bi-Weekly">Bi-Weekly</option>
@@ -305,24 +236,38 @@
                     </select>
                   </div>
                   <div class="col-md-2">
-                    <button type="submit" class="btn text-white w-100">Add</button>
+                    <button type="submit" class="btn text-white w-100">
+                      Add
+                    </button>
                   </div>
                 </div>
-              </form>
+              </form> -->
 
               <!-- Recurring Expenses -->
-              <h6>Recurring Expenses</h6>
+              <!-- <h6>Recurring Expenses</h6>
               <form id="recurring-expenses-form">
                 <div class="row g-3">
                   <div class="col-md-4">
-                    <input type="text" class="form-control" placeholder="Expense Name" required />
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Expense Name"
+                      required
+                    />
                   </div>
                   <div class="col-md-3">
-                    <input type="number" class="form-control" placeholder="Amount" required />
+                    <input
+                      type="number"
+                      class="form-control"
+                      placeholder="Amount"
+                      required
+                    />
                   </div>
                   <div class="col-md-3">
                     <select class="form-select" required>
-                      <option value="" disabled selected>Select Frequency</option>
+                      <option value="" disabled selected>
+                        Select Frequency
+                      </option>
                       <option value="Daily">Daily</option>
                       <option value="Weekly">Weekly</option>
                       <option value="Bi-Weekly">Bi-Weekly</option>
@@ -332,13 +277,15 @@
                     </select>
                   </div>
                   <div class="col-md-2">
-                    <button type="submit" class="btn text-white w-100">Add</button>
+                    <button type="submit" class="btn text-white w-100">
+                      Add
+                    </button>
                   </div>
                 </div>
-              </form>
+              </form> -->
 
               <!-- Recurring Transactions Table -->
-              <h6 class="mt-4">Recurring Transactions Summary</h6>
+              <!-- <h6 class="mt-4">Recurring Transactions Summary</h6>
               <table class="table table-bordered">
                 <thead>
                   <tr>
@@ -349,11 +296,11 @@
                   </tr>
                 </thead>
                 <tbody id="recurring-transactions-summary"></tbody>
-              </table>
-            </div>
+              </table> -->
+            <!-- </div>
           </div>
-        </div>
-      </div>
+        </div> -->
+        
       </div>
     </div>
   </body>
