@@ -38,6 +38,7 @@
             class="form-control"
             id="firstName"
             placeholder="John"
+            required
           />
           <label for="firstName">First name</label>
         </div>
@@ -47,6 +48,7 @@
             class="form-control"
             id="lastName"
             placeholder="John"
+            required
           />
           <label for="lastName">Last name</label>
         </div>
@@ -56,6 +58,8 @@
             class="form-control"
             id="email"
             placeholder="name@example.com"
+            autocomplete="email"
+            required
           />
           <label for="email">Email address</label>
         </div>
@@ -64,7 +68,9 @@
             type="password"
             class="form-control"
             id="password"
-            placeholder="Password"
+            placeholder="password"
+            autocomplete="current-password"
+            required
           />
           <label for="password">Password</label>
           <button type="button" id="passwordToggleBtn">
