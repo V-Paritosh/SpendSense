@@ -15,14 +15,13 @@ async function getSession() {
   return data.session;
 }
 
-
 //Function to display user's name
 async function usersName(userId) {
   const { data: userProfile, error } = await supabase
     .from("users")
     .select("firstName")
     .eq("id", userId);
-  
+
   if (error) {
     console.log("Error getting user profile: ", error);
     return;
@@ -31,8 +30,6 @@ async function usersName(userId) {
   const title = document.getElementById("title");
   title.textContent = `Welcome, ${userProfile[0].firstName}`;
 }
-
-
 
 // Function to fetch and calculate net worth
 async function calculateNetworth(userId) {
@@ -79,7 +76,12 @@ async function fetchExpenses(userId) {
   }
 
   let expensesList = document.getElementById("expenses");
-  expensesList.innerHTML = "";
+
+  if (expensesData.length == 0 || expensesData == null) {
+    return;
+  } else {
+    expensesList.innerHTML = "";
+  }
 
   expensesData.forEach((expense) => {
     let listItem = document.createElement("li");
@@ -119,7 +121,12 @@ async function fetchPayments(userId) {
   }
 
   let paymentsList = document.getElementById("payments");
-  paymentsList.innerHTML = "";
+  
+  if (paymentData.length == 0 || paymentData == null) {
+    return;
+  } else {
+    paymentsList.innerHTML = "";
+  }
 
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
