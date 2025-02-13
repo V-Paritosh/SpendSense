@@ -87,16 +87,24 @@ paymentBtn?.addEventListener("click", async (event) => {
   event.preventDefault();
 
   const paymentForm = document.getElementById("paymentsForm");
-  const paymentType = document.getElementById("paymentType").value;
+  const paymentType = toTitleCase(document.getElementById("paymentType").value);
   const paymentAmt = document.getElementById("paymentAmount").value;
   const paymentDate = document.getElementById("paymentDate").value;
-  console.log(paymentDate);
+
+  // Create a Date object with the local date
+  const localDate = new Date(paymentDate); // This will be in the local timezone
+  localDate.setHours(0, 0, 0, 0); // Set the time to midnight
+
+  console.log(localDate); // Check if the date is formatted properly
+
+  // Convert to ISO string before inserting (it will keep the local timezone time)
+  const formattedDate = localDate.toISOString();
 
   const { error: insertError } = await supabase.from("payments").insert([
     {
       type: paymentType,
       amount: paymentAmt,
-      date: paymentDate,
+      date: formattedDate, // Insert as ISO format
     },
   ]);
 
@@ -108,3 +116,8 @@ paymentBtn?.addEventListener("click", async (event) => {
     alert("Payment Added");
   }
 });
+
+// Function to convert string to Title Case
+function toTitleCase(str) {
+  return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+}
