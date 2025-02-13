@@ -11,9 +11,28 @@ async function getSession() {
     console.log("Error getting session:", error);
     return null;
   }
-  console.log("Session data:", data); // Log the session data
+  console.log("Session data:", data);
   return data.session;
 }
+
+
+//Function to display user's name
+async function usersName(userId) {
+  const { data: userProfile, error } = await supabase
+    .from("users")
+    .select("firstName")
+    .eq("id", userId);
+  
+  if (error) {
+    console.log("Error getting user profile: ", error);
+    return;
+  }
+
+  const title = document.getElementById("title");
+  title.textContent = `Welcome, ${userProfile[0].firstName}`;
+}
+
+
 
 // Function to fetch and calculate net worth
 async function calculateNetworth(userId) {
@@ -32,11 +51,41 @@ async function calculateNetworth(userId) {
     return;
   }
 
-  const totalIncome = incomeData.reduce((sum, record) => sum + record.amount, 0);
-  const totalExpenses = expenseData.reduce((sum, record) => sum + record.amount, 0);
+  const totalIncome = incomeData.reduce(
+    (sum, record) => sum + record.amount,
+    0
+  );
+  const totalExpenses = expenseData.reduce(
+    (sum, record) => sum + record.amount,
+    0
+  );
   const networth = totalIncome - totalExpenses;
 
-  document.getElementById("networth").textContent = `Total Networth: $${networth.toFixed(2)}`;
+  document.getElementById(
+    "networth"
+  ).textContent = `Total Networth: $${networth.toFixed(2)}`;
+}
+
+// Function to fetch and display upcoming expenses
+async function fetchExpenses(userId) {
+  const { data: expensesData, error } = await supabase
+    .from("expenses")
+    .select("category, amount")
+    .eq("userId", userId);
+
+  if (error) {
+    console.error("Error fetching expenses:", error);
+    return;
+  }
+
+  let expensesList = document.getElementById("expenses");
+  expensesList.innerHTML = "";
+
+  expensesData.forEach((expense) => {
+    let listItem = document.createElement("li");
+    listItem.textContent = `${expense.category}: $${expense.amount.toFixed(2)}`;
+    expensesList.appendChild(listItem);
+  });
 }
 
 // Function to fetch and display debts
@@ -52,7 +101,9 @@ async function fetchDebts(userId) {
   }
 
   const totalDebts = debtData.reduce((sum, record) => sum + record.amount, 0);
-  document.getElementById("debts").textContent = `Total Debts: $${totalDebts.toFixed(2)}`;
+  document.getElementById(
+    "debts"
+  ).textContent = `Total Debts: $${totalDebts.toFixed(2)}`;
 }
 
 // Function to fetch and display upcoming payments
@@ -68,11 +119,37 @@ async function fetchPayments(userId) {
   }
 
   let paymentsList = document.getElementById("payments");
-  paymentsList.innerHTML = ""; // Clear existing entries
+  paymentsList.innerHTML = "";
 
-  paymentData.forEach((payment) => {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  const upcomingPayments = paymentData
+    .map((payment) => {
+      let paymentDate = new Date(payment.date);
+      return { ...payment, paymentDate };
+    })
+    .sort((a, b) => a.paymentDate - b.paymentDate)
+    .slice(0, 5);
+
+  upcomingPayments.forEach((payment) => {
+    const timeDiff = payment.paymentDate - currentDate;
+    const daysUntilDue = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
     let listItem = document.createElement("li");
-    listItem.textContent = `${payment.type}: $${payment.amount} - Due on ${payment.date}`;
+
+    if (payment.paymentDate < currentDate) {
+      listItem.style.color = "red";
+      listItem.textContent = `${payment.type}: $${payment.amount} - Pay Now`;
+    } else if (
+      payment.paymentDate.toDateString() === currentDate.toDateString()
+    ) {
+      listItem.style.color = "green";
+      listItem.textContent = `${payment.type}: $${payment.amount} - Pay Today`;
+    } else {
+      listItem.textContent = `${payment.type}: $${payment.amount} - Due in ${daysUntilDue} days`;
+    }
+
     paymentsList.appendChild(listItem);
   });
 }
@@ -83,7 +160,9 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((session) => {
       if (session && session.user) {
         const userId = session.user.id;
+        usersName(userId);
         calculateNetworth(userId);
+        fetchExpenses(userId);
         fetchDebts(userId);
         fetchPayments(userId);
       } else {
