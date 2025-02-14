@@ -17,6 +17,7 @@ body {
   color: #fff;
   padding: 1rem;
   width: 250px;
+  z-index: 1000;
 }
 
 .active {
@@ -42,6 +43,11 @@ body {
   color: #fff !important;
   box-shadow: none !important;
 }
+
+.dropdown-item:hover{
+  background-color: #677d7f;
+}
+
 
 
 @media (max-width: 1000px) {

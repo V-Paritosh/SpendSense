@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
@@ -65,8 +67,8 @@
         </li> -->
       </ul>
       <hr />
-      
-      <div class="dropdown">
+
+      <div class="dropdown position-relative">
         <a
           href="#"
           class="d-flex align-items-center text-white text-decoration-none"
@@ -90,33 +92,5 @@
         </ul>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-      const SUPABASE_URL = "https://egzhuriimugvkjiauphl.supabase.co";
-      const SUPABASE_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVnemh1cmlpbXVndmtqaWF1cGhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQwNzEzNjcsImV4cCI6MjAzOTY0NzM2N30.29e4s0hYCEB3e4m0GDB2WgSpEDbiJSSC4FOg5aU8ZOk";
-
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-     // Sign Out Functionality
-      document.getElementById("signoutBtn")?.addEventListener("click", async (event) => {
-        event.preventDefault();
-
-        // Check if user is logged in
-        const { data: user } = await supabase.auth.getUser();
-        if (!user) {
-          alert("No user logged in.");
-          return;
-        }
-
-        // Sign out user
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-          alert("Error signing out: " + error.message);
-        } else {
-          window.location.href = "../../Login/index.html";
-        }
-      });
-    </script>
   </body>
 </html>
