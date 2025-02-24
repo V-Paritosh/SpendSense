@@ -136,8 +136,8 @@ async function fetchPayments(userId) {
       let paymentDate = new Date(payment.date);
       return { ...payment, paymentDate };
     })
-    .sort((a, b) => a.paymentDate - b.paymentDate)
-    .slice(0, 5);
+    .sort((a, b) => a.paymentDate - b.paymentDate);
+    // .slice(0, 5);
 
   upcomingPayments.forEach((payment) => {
     const timeDiff = payment.paymentDate - currentDate;

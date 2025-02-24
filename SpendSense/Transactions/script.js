@@ -18,6 +18,11 @@ incomeBtn?.addEventListener("click", async (event) => {
   const incomeSource = document.getElementById("incomeSource").value;
   const incomeAmt = document.getElementById("incomeAmount").value;
 
+  if (!incomeSource || !incomeAmt) {
+    alert("Please enter all information");
+    return;
+  }
+
   const { error: insertError } = await supabase.from("income").insert([
     {
       source: incomeSource,
@@ -41,6 +46,11 @@ expenseBtn?.addEventListener("click", async (event) => {
   const expenseForm = document.getElementById("expensesForm");
   const expenseCategory = document.getElementById("expenseCategory").value;
   const expenseAmt = document.getElementById("expenseAmount").value;
+
+  if (!expenseCategory || !expenseAmt) {
+    alert("Please enter all information");
+    return;
+  }
 
   const { error: insertError } = await supabase.from("expenses").insert([
     {
@@ -66,6 +76,11 @@ debtBtn?.addEventListener("click", async (event) => {
   const debtType = document.getElementById("debtType").value;
   const debtAmt = document.getElementById("debtAmount").value;
 
+  if (!debtType || !debtAmt) {
+    alert("Please enter all information");
+    return;
+  }
+
   const { error: insertError } = await supabase.from("debts").insert([
     {
       type: debtType,
@@ -90,6 +105,11 @@ paymentBtn?.addEventListener("click", async (event) => {
   const paymentType = toTitleCase(document.getElementById("paymentType").value);
   const paymentAmt = document.getElementById("paymentAmount").value;
   const paymentDate = document.getElementById("paymentDate").value;
+
+  if (!paymentType || !paymentAmt || !paymentDate) {
+    alert("Please enter all information");
+    return;
+  }
 
   // Create a Date object with the local date
   const localDate = new Date(paymentDate); // This will be in the local timezone
