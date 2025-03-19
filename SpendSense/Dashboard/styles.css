@@ -1,0 +1,12 @@
+.card {
+  height: 150px !important;
+}
+
+.card-title{
+  padding: 1rem 1rem 0 1rem;
+}
+
+.card-body{
+  padding-top: 0px !important;
+  overflow-y: auto;
+}
