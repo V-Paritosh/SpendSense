@@ -4,11 +4,27 @@ const SUPABASE_KEY =
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Function to get the current user session
+async function getSession() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    console.log("Error getting session:", error);
+    return null;
+  }
+  console.log("Session data:", data);
+  return data.session;
+}
+
 // Select elements
 const incomeBtn = document.getElementById("incomeBtn");
 const expenseBtn = document.getElementById("expenseBtn");
 const debtBtn = document.getElementById("debtBtn");
 const paymentBtn = document.getElementById("paymentBtn");
+
+// Function to convert string to Title Case
+function toTitleCase(str) {
+  return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+}
 
 // Income Insert
 incomeBtn?.addEventListener("click", async (event) => {
@@ -137,7 +153,136 @@ paymentBtn?.addEventListener("click", async (event) => {
   }
 });
 
-// Function to convert string to Title Case
-function toTitleCase(str) {
-  return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+// Function to fetch and display all transactions
+async function fetchTransactions(userId) {
+  try {
+    // Fetch Income
+    const { data: income, error: incomeError } = await supabase
+      .from("income")
+      .select("id, created_at, source, amount")
+      .eq("userId", userId);
+    if (incomeError) throw incomeError;
+
+    // Fetch Expenses
+    const { data: expenses, error: expensesError } = await supabase
+      .from("expenses")
+      .select("id, created_at, category, amount")
+      .eq("userId", userId);
+    if (expensesError) throw expensesError;
+
+    // Fetch Debts
+    const { data: debts, error: debtsError } = await supabase
+      .from("debts")
+      .select("id, created_at, type, amount")
+      .eq("userId", userId);
+    if (debtsError) throw debtsError;
+
+    // Fetch Payments
+    const { data: payments, error: paymentsError } = await supabase
+      .from("payments")
+      .select("id, date, type, amount")
+      .eq("userId", userId);
+    if (paymentsError) throw paymentsError;
+
+    // Combine and sort transactions
+    const transactions = [
+      ...income.map((item) => ({
+        id: item.id,
+        table: "income",
+        date: item.created_at,
+        type: "Income",
+        category: item.source,
+        amount: item.amount,
+      })),
+      ...expenses.map((item) => ({
+        id: item.id,
+        table: "expenses",
+        date: item.created_at,
+        type: "Expense",
+        category: item.category,
+        amount: item.amount,
+      })),
+      ...debts.map((item) => ({
+        id: item.id,
+        table: "debts",
+        date: item.created_at,
+        type: "Debt",
+        category: item.type,
+        amount: item.amount,
+      })),
+      ...payments.map((item) => ({
+        id: item.id,
+        table: "payments",
+        date: item.date,
+        type: "Payment",
+        category: item.type,
+        amount: item.amount,
+      })),
+    ];
+
+    // Sort transactions by date (newest first)
+    transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Render transactions in table
+    const transactionTable = document.getElementById("transaction-history");
+    transactionTable.innerHTML = transactions
+      .map(
+        (transaction) => `
+        <tr id="transaction-${transaction.id}">
+          <td>${new Date(transaction.date).toLocaleDateString()}</td>
+          <td>${transaction.type}</td>
+          <td>${transaction.category}</td>
+          <td>$${transaction.amount.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteTransaction('${
+              transaction.id
+            }', '${transaction.table}')">
+              Delete
+            </button>
+          </td>
+        </tr>
+      `
+      )
+      .join("");
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+  }
 }
+
+async function deleteTransaction(id, table) {
+  if (!confirm("Are you sure you want to delete this transaction?")) {
+    return; // Stop if user cancels
+  }
+
+  try {
+    const { error } = await supabase.from(table).delete().eq("id", id);
+
+    if (error) {
+      console.error("Error deleting transaction:", error);
+      alert("Error deleting transaction. Please try again.");
+      return;
+    }
+
+    // Remove row from the table after deletion
+    document.getElementById(`transaction-${id}`).remove();
+    alert("Transaction deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    alert("Something went wrong!");
+  }
+}
+
+
+// Run the session check and load transactions when the DOM loads
+document.addEventListener("DOMContentLoaded", () => {
+  getSession()
+    .then((session) => {
+      if (session && session.user) {
+        const userId = session.user.id;
+        fetchTransactions(userId);
+      } else {
+        console.log("No user session found.");
+      }
+    })
+    .catch((error) => console.log("Error getting session: ", error));
+});
