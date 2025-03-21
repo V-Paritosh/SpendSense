@@ -28,7 +28,7 @@ async function usersName(userId) {
   }
 
   const title = document.getElementById("title");
-  title.textContent = `Welcome, ${userProfile[0].firstName}`;
+  title.textContent = `Welcome, ${userProfile[0].firstName} ${userProfile[0].lastName}`;
 }
 
 // Function to fetch and calculate net worth
@@ -67,7 +67,7 @@ async function calculateNetworth(userId) {
 async function fetchExpenses(userId) {
   const { data: expensesData, error } = await supabase
     .from("expenses")
-    .select("category, amount")
+    .select("*")
     .eq("userId", userId);
 
   if (error) {
@@ -83,7 +83,18 @@ async function fetchExpenses(userId) {
     expensesList.innerHTML = "";
   }
 
-  expensesData.forEach((expense) => {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  const expensePayments = expensesData
+    .map((expense) => {
+      let expenseDate = new Date(expense.created_at);
+      return { ...expense, expenseDate };
+    })
+    .sort((a, b) => a.expenseDate - b.expenseDate)
+    .slice(0, 10);
+  
+  expensePayments.forEach((expense) => {
     let listItem = document.createElement("li");
     listItem.textContent = `${expense.category}: $${expense.amount.toFixed(2)}`;
     expensesList.appendChild(listItem);
