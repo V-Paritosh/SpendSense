@@ -4,7 +4,7 @@
 /* Global Styles */
 body {
   font-family: "Montserrat", sans-serif !important;
-  background-color: #5e766c !important;
+  background-color: #6a8b76 !important;
   margin: 0;
   padding: 0;
 }
@@ -16,16 +16,16 @@ body {
 } */
 
 .card-title{
-  color: #5e766c !important;
+  color: #6a8b76 !important;
 }
 
 .custom-border {
-  border-left: 4px solid #5e766c;
+  border-left: 4px solid #6a8b76;
 }
 
 .btn-outline {
-  color: #5e766c !important;
-  border-color: #5e766c !important;
+  color: #6a8b76 !important;
+  border-color: #6a8b76 !important;
 }
 
 .btn-custom {

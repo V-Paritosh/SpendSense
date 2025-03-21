@@ -21,7 +21,7 @@ body {
 }
 
 .active {
-    background-color: #5e766c !important;
+    background-color: #6a8b76 !important;
   }
 
 .settings {
@@ -39,7 +39,7 @@ body {
 
 .dropdown-item:focus, 
 .dropdown-item:active {
-  background-color: #5e766c!important;
+  background-color: #6a8b76!important;
   color: #fff !important;
   box-shadow: none !important;
 }
