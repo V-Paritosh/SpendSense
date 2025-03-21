@@ -19,7 +19,7 @@ async function getSession() {
 async function usersName(userId) {
   const { data: userProfile, error } = await supabase
     .from("users")
-    .select("firstName")
+    .select("*")
     .eq("id", userId);
 
   if (error) {
@@ -52,15 +52,17 @@ async function calculateNetworth(userId) {
     (sum, record) => sum + record.amount,
     0
   );
+
   const totalExpenses = expenseData.reduce(
     (sum, record) => sum + record.amount,
     0
   );
+
   const networth = totalIncome - totalExpenses;
 
   document.getElementById(
     "networth"
-  ).textContent = `Total Networth: $${networth.toFixed(2)}`;
+  ).textContent = `Total Balance: $${networth.toFixed(2)}`;
 }
 
 // Function to fetch and display upcoming expenses
