@@ -249,6 +249,45 @@ async function fetchTransactions(userId) {
   }
 }
 
+// Function to listen for new transactions and update the UI
+function listenForNewTransactions(userId) {
+  // Real-time subscription for income table
+  supabase
+    .from("income")
+    .on("INSERT", (payload) => {
+      console.log("New income added:", payload.new);
+      fetchTransactions(userId); // Re-fetch transactions when a new one is added
+    })
+    .subscribe();
+
+  // Real-time subscription for expenses table
+  supabase
+    .from("expenses")
+    .on("INSERT", (payload) => {
+      console.log("New expense added:", payload.new);
+      fetchTransactions(userId); // Re-fetch transactions when a new one is added
+    })
+    .subscribe();
+
+  // Real-time subscription for debts table
+  supabase
+    .from("debts")
+    .on("INSERT", (payload) => {
+      console.log("New debt added:", payload.new);
+      fetchTransactions(userId); // Re-fetch transactions when a new one is added
+    })
+    .subscribe();
+
+  // Real-time subscription for payments table
+  supabase
+    .from("payments")
+    .on("INSERT", (payload) => {
+      console.log("New payment added:", payload.new);
+      fetchTransactions(userId); // Re-fetch transactions when a new one is added
+    })
+    .subscribe();
+}
+
 async function deleteTransaction(id, table) {
   if (!confirm("Are you sure you want to delete this transaction?")) {
     return; // Stop if user cancels
@@ -273,13 +312,14 @@ async function deleteTransaction(id, table) {
 }
 
 
-// Run the session check and load transactions when the DOM loads
+// Run the session check, load transactions, and start listening for new transactions
 document.addEventListener("DOMContentLoaded", () => {
   getSession()
     .then((session) => {
       if (session && session.user) {
         const userId = session.user.id;
-        fetchTransactions(userId);
+        fetchTransactions(userId); // Initial fetch
+        listenForNewTransactions(userId); // Start listening for new transactions
       } else {
         console.log("No user session found.");
       }
