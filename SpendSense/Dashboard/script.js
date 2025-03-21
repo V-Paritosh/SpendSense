@@ -172,7 +172,142 @@ async function fetchPayments(userId) {
   });
 }
 
-// Run functions on page load after getting session
+// Function to fetch and display financial data in charts
+async function displayCharts(userId) {
+  // Fetch financial data (Income, Expenses, Debts)
+  const { data: incomeData, error: incomeError } = await supabase
+    .from("income")
+    .select("amount")
+    .eq("userId", userId);
+
+  const { data: expenseData, error: expenseError } = await supabase
+    .from("expenses")
+    .select("amount")
+    .eq("userId", userId);
+
+  const { data: debtData, error: debtError } = await supabase
+    .from("debts")
+    .select("type, amount")
+    .eq("userId", userId);
+
+  if (incomeError || expenseError || debtError) {
+    console.error("Error fetching financial data:", incomeError, expenseError, debtError);
+    return;
+  }
+
+  // Calculate total income and expenses
+  const totalIncome = incomeData.reduce((sum, record) => sum + record.amount, 0);
+  const totalExpenses = expenseData.reduce((sum, record) => sum + record.amount, 0);
+
+  // Prepare data for the charts
+  const financialData = {
+    labels: ["Income", "Expenses"],
+    datasets: [{
+      label: "Total Financial Overview",
+      data: [totalIncome, totalExpenses],
+      backgroundColor: ["#28a745", "#dc3545"], // Green for income, red for expenses
+      borderColor: ["#218838", "#c82333"],
+      borderWidth: 2,
+      hoverBackgroundColor: ["#218838", "#c82333"],
+      hoverBorderColor: ["#155724", "#721c24"],
+    }]
+  };
+
+  // Create Bar chart for Income and Expenses
+  const ctx = document.getElementById("financialChart").getContext("2d");
+  new Chart(ctx, {
+    type: "bar",
+    data: financialData,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top",
+          labels: {
+            font: {
+              size: 14,
+              weight: "bold",
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: "rgba(0,0,0,0.7)",
+          titleColor: "#fff",
+          bodyColor: "#fff",
+          borderColor: "#fff",
+          borderWidth: 1,
+          cornerRadius: 4,
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Financial Categories",
+            font: {
+              size: 14,
+              weight: "bold",
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Amount ($)",
+            font: {
+              size: 14,
+              weight: "bold",
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Prepare data for debts (Doughnut chart)
+  const debtLabels = debtData.map((debt) => debt.type);
+  const debtAmounts = debtData.map((debt) => debt.amount);
+
+  // Create Doughnut chart for debts
+  const debtCtx = document.getElementById("debtChart").getContext("2d");
+  new Chart(debtCtx, {
+    type: "doughnut",
+    data: {
+      labels: debtLabels,
+      datasets: [{
+        data: debtAmounts,
+        backgroundColor: ["#fd7e14", "#17a2b8", "#6f42c1"], // Orange, Blue, Purple for debts
+        borderColor: "#fff",
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top",
+          labels: {
+            font: {
+              size: 14,
+              weight: "bold",
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: "rgba(0,0,0,0.7)",
+          titleColor: "#fff",
+          bodyColor: "#fff",
+          borderColor: "#fff",
+          borderWidth: 1,
+          cornerRadius: 4,
+        }
+      }
+    }
+  });
+}
+
+// Fetch and display charts on page load
 document.addEventListener("DOMContentLoaded", () => {
   getSession()
     .then((session) => {
@@ -183,6 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchExpenses(userId);
         fetchDebts(userId);
         fetchPayments(userId);
+        displayCharts(userId); // Display charts
       } else {
         console.log("No user session found.");
       }
