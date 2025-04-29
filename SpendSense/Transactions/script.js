@@ -61,13 +61,18 @@ expenseBtn?.addEventListener("click", async (event) => {
 
   const expenseForm = document.getElementById("expensesForm");
   const expenseCategory = document.getElementById("expenseCategory").value;
-  const expenseAmt = document.getElementById("expenseAmount").value;
+  const expenseAmt = parseFloat(document.getElementById("expenseAmount").value.trim());
 
-  if (!expenseCategory || !expenseAmt) {
+  if (!expenseCategory || isNaN(expenseAmt)) {
     alert("Please enter all information");
     return;
   }
 
+  if (!validNum(expenseAmt)) {
+    expenseForm.reset();
+    return;
+  }
+  
   const { error: insertError } = await supabase.from("expenses").insert([
     {
       category: expenseCategory,
@@ -76,11 +81,11 @@ expenseBtn?.addEventListener("click", async (event) => {
   ]);
 
   if (insertError) {
-    alert("Error adding your expenses, Please try again.");
+    showAlert("Error adding your expenses, Please try again.", "danger");
     console.log(insertError);
   } else {
     expenseForm.reset();
-    alert("Expense Added");
+    showAlert("Expense Added", "success");
   }
 });
 
@@ -310,6 +315,60 @@ async function deleteTransaction(id, table) {
     alert("Something went wrong!");
   }
 }
+
+function validNum(num) {
+  // Check if num is a number and finite
+  if (typeof num !== "number" || !isFinite(num)) {
+    showAlert("Invalid number.", "warning");
+    return false;
+  }
+
+  // Ensure it's non-negative and below some max
+  if (num < 0 || num >= 1e8) {
+    showAlert("Please enter a realistic cost value.", "warning");
+    return false;
+  }
+
+  // Ensure it has at most two decimal places
+  const parts = num.toString().split(".");
+  if (parts[1] && parts[1].length > 2) {
+    showAlert("Cost should have at most two decimal places.", "warning");
+    return false;
+  }
+
+  return true;
+}
+
+function showAlert(message, type = "primary", timeout = 3500) {
+  const container = document.getElementById("alert-container");
+
+  const alert = document.createElement("div");
+  alert.className = `alert alert-${type} alert-dismissible alert-slide-in mb-2`;
+  alert.setAttribute("role", "alert");
+
+  const timerBar = document.createElement("div");
+  timerBar.className = "alert-timer-bar";
+  timerBar.style.animationDuration = `${timeout}ms`;
+
+  alert.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close small" data-bs-dismiss="alert" aria-label="Close"></button>
+  `;
+
+  alert.appendChild(timerBar);
+  container.appendChild(alert);
+
+  // Auto-dismiss with slide-out
+  setTimeout(() => {
+    alert.classList.remove("alert-slide-in");
+    alert.classList.add("alert-slide-out");
+
+    setTimeout(() => {
+      alert.remove();
+    }, 400);
+  }, timeout);
+}
+
 
 
 // Run the session check, load transactions, and start listening for new transactions

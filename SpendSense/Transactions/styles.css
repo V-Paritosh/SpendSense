@@ -4,10 +4,62 @@
 }
 
 .btn-danger {
-  background-color: #dc3545 !important; 
+  background-color: #dc3545 !important;
 }
 
 .transaction-history {
   max-height: 300px;
   overflow-y: auto;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.alert-slide-in {
+  animation: slideInRight 0.4s ease-out forwards;
+}
+
+.alert-slide-out {
+  animation: slideOutRight 0.4s ease-in forwards;
+}
+
+.alert-timer-bar {
+  height: 4px;
+  background-color: black;
+  animation: shrinkBar linear forwards;
+}
+
+.btn-close.small {
+  width: 0.75rem;
+  height: 0.75rem;
+  padding: 0.25rem;
+  background-size: 0.75em;
+}
+
+@keyframes shrinkBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
 }
