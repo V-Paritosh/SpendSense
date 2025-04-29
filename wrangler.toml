@@ -1,5 +1,0 @@
-name = "spendsense"
-compatibility_date = "2025-04-29"
-
-[site]
-bucket = "./"
