@@ -30,12 +30,14 @@ function toTitleCase(str) {
 incomeBtn?.addEventListener("click", async (event) => {
   event.preventDefault();
 
+  const session = await getSession();
+
   const incomeForm = document.getElementById("incomeForm");
   const incomeSource = document.getElementById("incomeSource").value;
   const incomeAmt = document.getElementById("incomeAmount").value;
 
   if (!incomeSource || !incomeAmt) {
-    alert("Please enter all information");
+    showAlert("Please enter all information", "warning");
     return;
   }
 
@@ -47,11 +49,12 @@ incomeBtn?.addEventListener("click", async (event) => {
   ]);
 
   if (insertError) {
-    alert("Error adding your income, Please try again.");
+    showAlert("Error adding your income, Please try again.", "danger");
     console.log(insertError);
   } else {
     incomeForm.reset();
-    alert("Income Added");
+    fetchTransactions(session.user.id);
+    showAlert("Income Added", "success");
   }
 });
 
@@ -59,12 +62,16 @@ incomeBtn?.addEventListener("click", async (event) => {
 expenseBtn?.addEventListener("click", async (event) => {
   event.preventDefault();
 
+  const session = await getSession();
+
   const expenseForm = document.getElementById("expensesForm");
   const expenseCategory = document.getElementById("expenseCategory").value;
-  const expenseAmt = parseFloat(document.getElementById("expenseAmount").value.trim());
+  const expenseAmt = parseFloat(
+    document.getElementById("expenseAmount").value.trim()
+  );
 
   if (!expenseCategory || isNaN(expenseAmt)) {
-    alert("Please enter all information");
+    showAlert("Please enter all information", "warning");
     return;
   }
 
@@ -72,7 +79,7 @@ expenseBtn?.addEventListener("click", async (event) => {
     expenseForm.reset();
     return;
   }
-  
+
   const { error: insertError } = await supabase.from("expenses").insert([
     {
       category: expenseCategory,
@@ -85,6 +92,7 @@ expenseBtn?.addEventListener("click", async (event) => {
     console.log(insertError);
   } else {
     expenseForm.reset();
+    fetchTransactions(session.user.id);
     showAlert("Expense Added", "success");
   }
 });
@@ -93,12 +101,14 @@ expenseBtn?.addEventListener("click", async (event) => {
 debtBtn?.addEventListener("click", async (event) => {
   event.preventDefault();
 
+  const session = await getSession();
+
   const debtForm = document.getElementById("debtsForm");
   const debtType = document.getElementById("debtType").value;
   const debtAmt = document.getElementById("debtAmount").value;
 
   if (!debtType || !debtAmt) {
-    alert("Please enter all information");
+    showAlert("Please enter all information", "warning");
     return;
   }
 
@@ -110,11 +120,12 @@ debtBtn?.addEventListener("click", async (event) => {
   ]);
 
   if (insertError) {
-    alert("Error adding your debt, Please try again.");
+    showAlert("Error adding your debt, Please try again.", "danger");
     console.log(insertError);
   } else {
     debtForm.reset();
-    alert("Debt Added");
+    fetchTransactions(session.user.id);
+    showAlert("Debt Added", "success");
   }
 });
 
@@ -122,13 +133,15 @@ debtBtn?.addEventListener("click", async (event) => {
 paymentBtn?.addEventListener("click", async (event) => {
   event.preventDefault();
 
+  const session = await getSession();
+
   const paymentForm = document.getElementById("paymentsForm");
   const paymentType = toTitleCase(document.getElementById("paymentType").value);
   const paymentAmt = document.getElementById("paymentAmount").value;
   const paymentDate = document.getElementById("paymentDate").value;
 
   if (!paymentType || !paymentAmt || !paymentDate) {
-    alert("Please enter all information");
+    showAlert("Please enter all information", "warning");
     return;
   }
 
@@ -150,11 +163,12 @@ paymentBtn?.addEventListener("click", async (event) => {
   ]);
 
   if (insertError) {
-    alert("Error adding your payment, Please try again.");
+    showAlert("Error adding your payment, Please try again.", "danger");
     console.log(insertError);
   } else {
     paymentForm.reset();
-    alert("Payment Added");
+    fetchTransactions(session.user.id);
+    showAlert("Payment Added", "success");
   }
 });
 
@@ -236,9 +250,14 @@ async function fetchTransactions(userId) {
         <tr id="transaction-${transaction.id}">
           <td>${new Date(transaction.date).toLocaleDateString()}</td>
           <td>${transaction.type}</td>
-          <td>${transaction.category}</td>
+          <td>${transaction.category || transaction.type}</td>
           <td>$${transaction.amount.toFixed(2)}</td>
           <td>
+            <button class="btn btn-primary btn-sm me-2" onclick="editTransaction('${
+              transaction.id
+            }', '${transaction.table}')">
+              Edit
+            </button>
             <button class="btn btn-danger btn-sm" onclick="deleteTransaction('${
               transaction.id
             }', '${transaction.table}')">
@@ -294,26 +313,25 @@ function listenForNewTransactions(userId) {
 }
 
 async function deleteTransaction(id, table) {
-  if (!confirm("Are you sure you want to delete this transaction?")) {
-    return; // Stop if user cancels
-  }
+  showConfirmation(
+    "Are you sure you want to delete this transaction?",
+    async () => {
+      try {
+        const { error } = await supabase.from(table).delete().eq("id", id);
+        if (error) {
+          console.error("Error deleting transaction:", error);
+          showAlert("Error deleting transaction. Please try again.", "danger");
+          return;
+        }
 
-  try {
-    const { error } = await supabase.from(table).delete().eq("id", id);
-
-    if (error) {
-      console.error("Error deleting transaction:", error);
-      alert("Error deleting transaction. Please try again.");
-      return;
+        document.getElementById(`transaction-${id}`).remove();
+        showAlert("Transaction deleted successfully.", "success");
+      } catch (err) {
+        console.error("Error deleting transaction:", err);
+        showAlert("Something went wrong!", "danger");
+      }
     }
-
-    // Remove row from the table after deletion
-    document.getElementById(`transaction-${id}`).remove();
-    alert("Transaction deleted successfully!");
-  } catch (error) {
-    console.error("Error deleting transaction:", error);
-    alert("Something went wrong!");
-  }
+  );
 }
 
 function validNum(num) {
@@ -369,7 +387,208 @@ function showAlert(message, type = "primary", timeout = 3500) {
   }, timeout);
 }
 
+function showConfirmation(message, onConfirm, onCancel = () => {}) {
+  const container = document.getElementById("alert-container");
 
+  const overlay = document.createElement("div");
+  overlay.className = "confirmation-overlay";
+
+  const confirmBox = document.createElement("div");
+  confirmBox.className = `alert alert-warning alert-dismissible confirm-box`;
+  confirmBox.setAttribute("role", "alert");
+
+  confirmBox.innerHTML = `
+    <div class="mb-2">${message}</div>
+    <div class="d-flex justify-content-center gap-2">
+      <button class="btn btn-sm btn-danger">Yes</button>
+      <button class="btn btn-sm btn-secondary">No</button>
+    </div>
+  `;
+
+  overlay.appendChild(confirmBox);
+  container.appendChild(overlay);
+
+  const yesBtn = confirmBox.querySelector("button.btn-danger");
+  const noBtn = confirmBox.querySelector("button.btn-secondary");
+
+  const cleanup = () => {
+    confirmBox.classList.add("alert-slide-out");
+    setTimeout(() => overlay.remove(), 400);
+  };
+
+  yesBtn.addEventListener("click", () => {
+    onConfirm();
+    cleanup();
+  });
+
+  noBtn.addEventListener("click", () => {
+    onCancel();
+    cleanup();
+  });
+}
+
+// Function to edit a transaction
+async function editTransaction(id, table) {
+  try {
+    console.log("Editing transaction with:", { id, table });
+
+    // Fetch the transaction details
+    const { data, error } = await supabase
+      .from(table)
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching transaction:", error);
+      throw error;
+    }
+
+    console.log("Fetched transaction data:", data);
+
+    // Create and show the edit modal
+    const modal = document.createElement("div");
+    modal.className = "modal fade";
+    modal.id = "editTransactionModal";
+    modal.innerHTML = `
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Transaction</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editTransactionForm">
+              <div class="mb-3">
+                <label for="editAmount" class="form-label">Amount</label>
+                <input type="number" class="form-control" id="editAmount" value="${
+                  data.amount
+                }" step="0.01" required>
+              </div>
+              <div class="mb-3">
+                <label for="editCategory" class="form-label">${
+                  table === "income" ? "Source" : "Category"
+                }</label>
+                <input type="text" class="form-control" id="editCategory" value="${
+                  data.source || data.category || data.type
+                }" required>
+              </div>
+              ${
+                table === "payments"
+                  ? `
+                <div class="mb-3">
+                  <label for="editDate" class="form-label">Date</label>
+                  <input type="date" class="form-control" id="editDate" value="${
+                    new Date(data.date).toISOString().split("T")[0]
+                  }" required>
+                </div>
+              `
+                  : ""
+              }
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="saveTransactionChanges('${id}', '${table}')">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    const modalInstance = new bootstrap.Modal(modal);
+    modalInstance.show();
+
+    // Remove modal when hidden
+    modal.addEventListener("hidden.bs.modal", () => {
+      modal.remove();
+    });
+  } catch (error) {
+    console.error("Error editing transaction:", error);
+    showAlert("Error loading transaction details", "danger");
+  }
+}
+
+// Function to save transaction changes
+async function saveTransactionChanges(id, table) {
+  try {
+    const amount = parseFloat(document.getElementById("editAmount").value);
+    const category = document.getElementById("editCategory").value;
+    const date =
+      table === "payments" ? document.getElementById("editDate").value : null;
+
+    if (!validNum(amount)) {
+      showAlert("Please enter a valid amount", "warning");
+      return;
+    }
+
+    // Get the current user session
+    const session = await getSession();
+    if (!session || !session.user) {
+      showAlert("User session not found", "danger");
+      return;
+    }
+
+    const updateData = {
+      amount: amount,
+      ...(table === "income"
+        ? { source: category }
+        : table === "expenses"
+        ? { category: category }
+        : table === "debts"
+        ? { type: category }
+        : { type: category, date: date }),
+    };
+
+    console.log("Attempting to update transaction:", {
+      table,
+      id,
+      updateData,
+      userId: session.user.id,
+    });
+
+    // First verify the record exists
+    const { data: existingData, error: fetchError } = await supabase
+      .from(table)
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching existing record:", fetchError);
+      throw fetchError;
+    }
+
+    console.log("Existing record:", existingData);
+
+    // Now perform the update
+    const { data, error } = await supabase
+      .from(table)
+      .update(updateData)
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      console.error("Update error:", error);
+      throw error;
+    }
+
+    console.log("Update response:", data);
+
+    // Close the modal
+    bootstrap.Modal.getInstance(
+      document.getElementById("editTransactionModal")
+    ).hide();
+
+    // Refresh the transactions list
+    fetchTransactions(session.user.id);
+
+    showAlert("Transaction updated successfully", "success");
+  } catch (error) {
+    console.error("Error saving transaction changes:", error);
+    showAlert("Error updating transaction", "danger");
+  }
+}
 
 // Run the session check, load transactions, and start listening for new transactions
 document.addEventListener("DOMContentLoaded", () => {
