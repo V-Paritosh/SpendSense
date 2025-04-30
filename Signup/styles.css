@@ -111,7 +111,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1061;
+  z-index: 1055;
 }
 
 .confirm-box {
@@ -119,5 +119,4 @@ body {
   max-width: 90%;
   animation: slideInRight 0.4s ease-out;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1062;
 }
