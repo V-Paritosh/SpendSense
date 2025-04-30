@@ -333,7 +333,7 @@ async function fetchTransactions(userId) {
           <td class="text-center">${
             transaction.category || transaction.type
           }</td>
-          <td class="text-center">$${transaction.amount.toFixed(2)}</td>
+          <td class="text-center">$${formatNumber(transaction.amount)}</td>
           <td class="d-flex justify-content-center">
             <button class="btn btn-sm me-2" onclick="editTransaction('${
               transaction.id
@@ -729,6 +729,13 @@ async function saveTransactionChanges(id, table) {
     console.error("Error saving transaction changes:", error);
     showAlert("Error updating transaction", "danger");
   }
+}
+
+function formatNumber(number, locale = "en-US") {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(number);
 }
 
 // Run the session check, load transactions, and start listening for new transactions

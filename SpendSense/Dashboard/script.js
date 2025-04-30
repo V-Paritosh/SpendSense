@@ -62,7 +62,7 @@ async function calculateNetworth(userId) {
 
   document.getElementById(
     "networth"
-  ).textContent = `Total Balance: $${networth.toFixed(2)}`;
+  ).textContent = `Total Balance: $${formatNumber(networth)}`;
 }
 
 // Function to fetch and display upcoming expenses
@@ -98,7 +98,9 @@ async function fetchExpenses(userId) {
 
   expensePayments.forEach((expense) => {
     let listItem = document.createElement("li");
-    listItem.textContent = `${expense.category}: $${expense.amount.toFixed(2)}`;
+    listItem.textContent = `${expense.category}: $${formatNumber(
+      expense.amount
+    )}`;
     expensesList.appendChild(listItem);
   });
 }
@@ -136,7 +138,7 @@ async function fetchDebts(userId) {
       "d-flex justify-content-between align-items-center p-1";
 
     let debtInfo = document.createElement("span");
-    debtInfo.textContent = `${debt.type}: $${debt.amount.toFixed(2)}`;
+    debtInfo.textContent = `${debt.type}: $${formatNumber(debt.amount)}`;
 
     let paymentContainer = document.createElement("div");
     paymentContainer.className = "d-flex align-items-center gap-2";
@@ -269,22 +271,29 @@ async function fetchPayments(userId) {
     let listItem = document.createElement("li");
     listItem.className =
       "d-flex justify-content-between align-items-center p-1";
+    listItem.setAttribute("data-payment-id", payment.id);
 
     let paymentInfo = document.createElement("span");
     if (payment.paymentDate < currentDate) {
       paymentInfo.style.color = "red";
-      paymentInfo.textContent = `${payment.type}: $${payment.amount} - Pay Now`;
+      paymentInfo.textContent = `${payment.type}: $${formatNumber(
+        payment.amount
+      )} - Pay Now`;
     } else if (
       payment.paymentDate.toDateString() === currentDate.toDateString()
     ) {
       paymentInfo.style.color = "green";
-      paymentInfo.textContent = `${payment.type}: $${payment.amount} - Pay Today`;
+      paymentInfo.textContent = `${payment.type}: $${formatNumber(
+        payment.amount
+      )} - Pay Today`;
     } else {
-      paymentInfo.textContent = `${payment.type}: $${payment.amount} - Due in ${daysUntilDue} days`;
+      paymentInfo.textContent = `${payment.type}: $${formatNumber(
+        payment.amount
+      )} - Due in ${daysUntilDue} days`;
     }
 
     let payButton = document.createElement("button");
-    payButton.className = "btn btn-sm btn-success";
+    payButton.className = "btn btn-sm btn-success payment-button";
     payButton.textContent = "Pay";
     payButton.onclick = () =>
       completePayment(payment.id, payment.type, payment.amount, userId);
@@ -297,6 +306,28 @@ async function fetchPayments(userId) {
 
 async function completePayment(paymentId, type, amount, userId) {
   try {
+    // Immediately remove the payment from the UI
+    const paymentItem = document.querySelector(
+      `[data-payment-id="${paymentId}"]`
+    );
+    if (paymentItem) {
+      paymentItem.remove();
+    }
+
+    // Disable all payment buttons to prevent double payments
+    const paymentButtons = document.querySelectorAll(".payment-button");
+    paymentButtons.forEach((button) => (button.disabled = true));
+
+    // Delete the payment
+    const { error: deleteError } = await supabase
+      .from("payments")
+      .delete()
+      .eq("id", paymentId);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
     // Add the payment as an expense
     const { error: expenseError } = await supabase.from("expenses").insert([
       {
@@ -310,24 +341,24 @@ async function completePayment(paymentId, type, amount, userId) {
       throw expenseError;
     }
 
-    // Delete the payment
-    const { error: deleteError } = await supabase
-      .from("payments")
-      .delete()
-      .eq("id", paymentId);
-
-    if (deleteError) {
-      throw deleteError;
-    }
-
     // Refresh the payments list, expenses list, and net worth
-    fetchPayments(userId);
-    fetchExpenses(userId);
-    calculateNetworth(userId);
+    await Promise.all([
+      fetchPayments(userId),
+      fetchExpenses(userId),
+      calculateNetworth(userId),
+    ]);
+
+    // Re-enable payment buttons
+    paymentButtons.forEach((button) => (button.disabled = false));
+
     showAlert("Payment completed successfully!", "success");
   } catch (error) {
     console.error("Error completing payment:", error);
     showAlert("Error completing payment. Please try again.", "danger");
+
+    // Re-enable payment buttons in case of error
+    const paymentButtons = document.querySelectorAll(".payment-button");
+    paymentButtons.forEach((button) => (button.disabled = false));
   }
 }
 
@@ -573,6 +604,26 @@ function showConfirmation(message, onConfirm, onCancel = () => {}) {
     onCancel();
     cleanup();
   });
+
+  // Add keyboard event listeners
+  document.addEventListener("keydown", function handleKeyPress(e) {
+    if (e.key === "Enter") {
+      onConfirm();
+      cleanup();
+      document.removeEventListener("keydown", handleKeyPress);
+    } else if (e.key === "Escape") {
+      onCancel();
+      cleanup();
+      document.removeEventListener("keydown", handleKeyPress);
+    }
+  });
+}
+
+function formatNumber(number, locale = "en-US") {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(number);
 }
 
 // Fetch and display charts on page load
