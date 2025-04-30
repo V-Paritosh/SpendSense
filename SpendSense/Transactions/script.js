@@ -33,11 +33,20 @@ incomeBtn?.addEventListener("click", async (event) => {
   const session = await getSession();
 
   const incomeForm = document.getElementById("incomeForm");
-  const incomeSource = document.getElementById("incomeSource").value;
-  const incomeAmt = document.getElementById("incomeAmount").value;
+  const incomeSource = toTitleCase(
+    document.getElementById("incomeSource").value.trim()
+  );
+  const incomeAmt = parseFloat(
+    document.getElementById("incomeAmount").value.trim()
+  );
 
-  if (!incomeSource || !incomeAmt) {
+  if (!incomeSource || isNaN(incomeAmt)) {
     showAlert("Please enter all information", "warning");
+    return;
+  }
+
+  if (!validNum(incomeAmt)) {
+    incomeForm.reset();
     return;
   }
 
@@ -65,7 +74,9 @@ expenseBtn?.addEventListener("click", async (event) => {
   const session = await getSession();
 
   const expenseForm = document.getElementById("expensesForm");
-  const expenseCategory = document.getElementById("expenseCategory").value;
+  const expenseCategory = toTitleCase(
+    document.getElementById("expenseCategory").value.trim()
+  );
   const expenseAmt = parseFloat(
     document.getElementById("expenseAmount").value.trim()
   );
@@ -104,11 +115,20 @@ debtBtn?.addEventListener("click", async (event) => {
   const session = await getSession();
 
   const debtForm = document.getElementById("debtsForm");
-  const debtType = document.getElementById("debtType").value;
-  const debtAmt = document.getElementById("debtAmount").value;
+  const debtType = toTitleCase(
+    document.getElementById("debtType").value.trim()
+  );
+  const debtAmt = parseFloat(
+    document.getElementById("debtAmount").value.trim()
+  );
 
-  if (!debtType || !debtAmt) {
+  if (!debtType || isNaN(debtAmt)) {
     showAlert("Please enter all information", "warning");
+    return;
+  }
+
+  if (!validNum(debtAmt)) {
+    debtForm.reset();
     return;
   }
 
@@ -129,6 +149,53 @@ debtBtn?.addEventListener("click", async (event) => {
   }
 });
 
+function validateDate(dateString) {
+  // Check if date is empty
+  if (!dateString) {
+    showAlert("Please select a date", "warning");
+    return false;
+  }
+
+  // Create Date object from input
+  const inputDate = new Date(dateString);
+
+  // Check if date is valid
+  if (isNaN(inputDate.getTime())) {
+    showAlert("Invalid date format", "warning");
+    return false;
+  }
+
+  // Get current date
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  // Check if date is too far in the past (e.g., more than 10 years)
+  const tenYearsFuture = new Date();
+  tenYearsFuture.setFullYear(currentDate.getFullYear() + 10);
+  tenYearsFuture.setHours(0, 0, 0, 0);
+
+  // Check if date is in the future
+  if (inputDate > tenYearsFuture) {
+    showAlert(
+      "Payment date cannot be more than 10 years in the future",
+      "warning"
+    );
+    return false;
+  }
+
+  // Check if date is too far in the past (e.g., more than 10 years)
+  const tenYearsAgo = new Date();
+  tenYearsAgo.setFullYear(currentDate.getFullYear() - 10);
+  tenYearsAgo.setHours(0, 0, 0, 0);
+
+  if (inputDate < tenYearsAgo) {
+    showAlert("Payment date cannot be more than 10 years old", "warning");
+    return false;
+  }
+
+  return true;
+}
+
 // Payment Insert
 paymentBtn?.addEventListener("click", async (event) => {
   event.preventDefault();
@@ -137,11 +204,22 @@ paymentBtn?.addEventListener("click", async (event) => {
 
   const paymentForm = document.getElementById("paymentsForm");
   const paymentType = toTitleCase(document.getElementById("paymentType").value);
-  const paymentAmt = document.getElementById("paymentAmount").value;
+  const paymentAmt = parseFloat(
+    document.getElementById("paymentAmount").value.trim()
+  );
   const paymentDate = document.getElementById("paymentDate").value;
 
-  if (!paymentType || !paymentAmt || !paymentDate) {
+  if (!paymentType || isNaN(paymentAmt) || !paymentDate) {
     showAlert("Please enter all information", "warning");
+    return;
+  }
+
+  if (!validNum(paymentAmt)) {
+    paymentForm.reset();
+    return;
+  }
+
+  if (!validateDate(paymentDate)) {
     return;
   }
 
@@ -199,7 +277,7 @@ async function fetchTransactions(userId) {
     // Fetch Payments
     const { data: payments, error: paymentsError } = await supabase
       .from("payments")
-      .select("id, date, type, amount")
+      .select("id, created_at, date, type, amount")
       .eq("userId", userId);
     if (paymentsError) throw paymentsError;
 
@@ -232,7 +310,7 @@ async function fetchTransactions(userId) {
       ...payments.map((item) => ({
         id: item.id,
         table: "payments",
-        date: item.date,
+        date: item.created_at,
         type: "Payment",
         category: item.type,
         amount: item.amount,
@@ -248,12 +326,16 @@ async function fetchTransactions(userId) {
       .map(
         (transaction) => `
         <tr id="transaction-${transaction.id}">
-          <td>${new Date(transaction.date).toLocaleDateString()}</td>
-          <td>${transaction.type}</td>
-          <td>${transaction.category || transaction.type}</td>
-          <td>$${transaction.amount.toFixed(2)}</td>
-          <td>
-            <button class="btn btn-primary btn-sm me-2" onclick="editTransaction('${
+          <td class="text-center">${new Date(
+            transaction.date
+          ).toLocaleDateString()}</td>
+          <td class="text-center">${transaction.type}</td>
+          <td class="text-center">${
+            transaction.category || transaction.type
+          }</td>
+          <td class="text-center">$${transaction.amount.toFixed(2)}</td>
+          <td class="d-flex justify-content-center">
+            <button class="btn btn-sm me-2" onclick="editTransaction('${
               transaction.id
             }', '${transaction.table}')">
               Edit
@@ -360,6 +442,7 @@ function validNum(num) {
 function showAlert(message, type = "primary", timeout = 3500) {
   const container = document.getElementById("alert-container");
 
+  // Create alert element
   const alert = document.createElement("div");
   alert.className = `alert alert-${type} alert-dismissible alert-slide-in mb-2`;
   alert.setAttribute("role", "alert");
@@ -488,8 +571,8 @@ async function editTransaction(id, table) {
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="saveTransactionChanges('${id}', '${table}')">Save Changes</button>
+            <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn" onclick="saveTransactionChanges('${id}', '${table}')">Save Changes</button>
           </div>
         </div>
       </div>
@@ -512,13 +595,25 @@ async function editTransaction(id, table) {
 // Function to save transaction changes
 async function saveTransactionChanges(id, table) {
   try {
-    const amount = parseFloat(document.getElementById("editAmount").value);
-    const category = document.getElementById("editCategory").value;
+    const amount = parseFloat(
+      document.getElementById("editAmount").value.trim()
+    );
+    const category = toTitleCase(
+      document.getElementById("editCategory").value.trim()
+    );
     const date =
       table === "payments" ? document.getElementById("editDate").value : null;
 
     if (!validNum(amount)) {
-      showAlert("Please enter a valid amount", "warning");
+      return;
+    }
+
+    if (!validateDate(date)) {
+      return;
+    }
+
+    if (!category || isNaN(amount) || !date) {
+      showAlert("Please enter all information", "warning");
       return;
     }
 
