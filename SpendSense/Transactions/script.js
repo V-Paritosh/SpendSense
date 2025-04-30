@@ -648,17 +648,19 @@ async function saveTransactionChanges(id, table) {
     const date =
       table === "payments" ? document.getElementById("editDate").value : null;
 
+    if (!category || isNaN(amount) || table === "payments" ? !date : null) {
+      showAlert("Please enter all information", "warning");
+      return;
+    }
+
     if (!validNum(amount)) {
       return;
     }
 
-    if (!validateDate(date)) {
-      return;
-    }
-
-    if (!category || isNaN(amount) || !date) {
-      showAlert("Please enter all information", "warning");
-      return;
+    if (table === "payments") {
+      if (!validateDate(date)) {
+        return;
+      }
     }
 
     // Get the current user session
