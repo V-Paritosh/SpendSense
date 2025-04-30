@@ -88,6 +88,11 @@ async function profile() {
     return;
   }
 
+  // Remove old event listeners by replacing the node
+  const newProfileBtn = profileBtn.cloneNode(true);
+  profileBtn.parentNode.replaceChild(newProfileBtn, profileBtn);
+  profileBtn = newProfileBtn;
+
   profileBtn.addEventListener("click", async (event) => {
     console.log("Profile button clicked");
     event.preventDefault();
@@ -117,11 +122,11 @@ async function profile() {
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" required>
               </div>
-              <div class="modal-footer d-flex justify-content-between align-items-center">
-                <button type="button" class="btn btn-danger" id="deleteAccountBtn">Delete Account</button>
-                <button type="submit" class="btn btnCustom" id="saveProfileBtn">Save Changes</button>
-              </div>
             </form>
+          </div>
+          <div class="modal-footer d-flex justify-content-between align-items-center">
+            <button type="button" class="btn btn-danger" id="deleteAccountBtn">Delete Account</button>
+            <button type="button" class="btn btnCustom" id="saveProfileBtn">Save Changes</button>
           </div>
         </div>
       </div>
@@ -154,16 +159,10 @@ async function profile() {
     });
 
     modal
-      .querySelector("#profileForm")
-      .addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const firstName = toTitleCase(
-          modal.querySelector("#firstName").value.trim()
-        );
-        const lastName = toTitleCase(
-          modal.querySelector("#lastName").value.trim()
-        );
+      .querySelector("#saveProfileBtn")
+      .addEventListener("click", async () => {
+        const firstName = toTitleCase(modal.querySelector("#firstName").value.trim());
+        const lastName = toTitleCase(modal.querySelector("#lastName").value.trim());
         const email = modal.querySelector("#email").value.trim();
 
         if (!firstName || !lastName || !email) {
@@ -183,9 +182,8 @@ async function profile() {
           if (error) {
             showAlert("Error updating profile: " + error.message, "danger");
           } else {
-            try {
-              usersName(user.id);
-            } catch (error) {
+            try { usersName(user.id); }
+            catch (error) {
               console.error(error);
             }
             showAlert("Profile updated!", "success");
@@ -226,7 +224,6 @@ async function profile() {
       });
   });
 }
-
 
 function toTitleCase(str) {
   return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
