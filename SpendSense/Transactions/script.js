@@ -475,6 +475,7 @@ function showConfirmation(message, onConfirm, onCancel = () => {}) {
 
   const overlay = document.createElement("div");
   overlay.className = "confirmation-overlay";
+  overlay.tabIndex = -1; // Make overlay focusable
 
   const confirmBox = document.createElement("div");
   confirmBox.className = `alert alert-warning alert-dismissible confirm-box`;
@@ -483,18 +484,36 @@ function showConfirmation(message, onConfirm, onCancel = () => {}) {
   confirmBox.innerHTML = `
     <div class="mb-2">${message}</div>
     <div class="d-flex justify-content-center gap-2">
-      <button class="btn btn-sm btn-danger">Yes</button>
-      <button class="btn btn-sm btn-secondary">No</button>
+      <button class="btn btn-sm btn-danger" id="confirmYes">Yes</button>
+      <button class="btn btn-sm btn-secondary" id="confirmNo">No</button>
     </div>
   `;
 
   overlay.appendChild(confirmBox);
   container.appendChild(overlay);
 
-  const yesBtn = confirmBox.querySelector("button.btn-danger");
-  const noBtn = confirmBox.querySelector("button.btn-secondary");
+  const yesBtn = confirmBox.querySelector("#confirmYes");
+  const noBtn = confirmBox.querySelector("#confirmNo");
+
+  // Focus the Yes button by default
+  yesBtn.focus();
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      yesBtn.click();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      noBtn.click();
+    }
+  };
+
+  // Add keyboard event listener
+  document.addEventListener("keydown", handleKeyDown);
 
   const cleanup = () => {
+    // Remove keyboard event listener
+    document.removeEventListener("keydown", handleKeyDown);
     confirmBox.classList.add("alert-slide-out");
     setTimeout(() => overlay.remove(), 400);
   };
@@ -508,8 +527,28 @@ function showConfirmation(message, onConfirm, onCancel = () => {}) {
     onCancel();
     cleanup();
   });
-}
 
+  // Focus trap - prevent tabbing outside the confirmation box
+  const focusableElements = [yesBtn, noBtn];
+  const firstFocusableElement = focusableElements[0];
+  const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+  overlay.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusableElement) {
+          e.preventDefault();
+          lastFocusableElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusableElement) {
+          e.preventDefault();
+          firstFocusableElement.focus();
+        }
+      }
+    }
+  });
+}
 // Function to edit a transaction
 async function editTransaction(id, table) {
   try {
