@@ -44,3 +44,75 @@ body {
   background-color: #293134 !important;
   color: white !important;
 }
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.alert-slide-in {
+  animation: slideInRight 0.4s ease-out forwards;
+}
+
+.alert-slide-out {
+  animation: slideOutRight 0.4s ease-in forwards;
+}
+
+.alert-timer-bar {
+  height: 4px;
+  background-color: black;
+  animation: shrinkBar linear forwards;
+}
+
+.btn-close.small {
+  width: 0.75rem;
+  height: 0.75rem;
+  padding: 0.25rem;
+  background-size: 0.75em;
+}
+
+@keyframes shrinkBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3); /* Optional: darkens background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1055;
+}
+
+.confirm-box {
+  min-width: 300px;
+  max-width: 90%;
+  animation: slideInRight 0.4s ease-out;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
