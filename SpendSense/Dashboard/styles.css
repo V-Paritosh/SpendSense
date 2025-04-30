@@ -1,6 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500;700&display=swap");
+
+html,
+body {
+  font-family: "Montserrat" !important;
+  height: 100%;
+  margin: 0;
+  background-color: #6a8b76 !important;
+}
+
 .title {
   color: whi;
 }
+
 .card {
   height: 180px !important;
 }
@@ -66,22 +77,6 @@
   }
 }
 
-.modal {
-  z-index: 1040;
-}
-
-.modal-backdrop {
-  z-index: 1040;
-}
-
-#alert-container {
-  z-index: 1060;
-}
-
-.alert {
-  z-index: 1060;
-}
-
 .confirmation-overlay {
   position: fixed;
   top: 0;
@@ -92,7 +87,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1061;
+  z-index: 1055;
 }
 
 .confirm-box {
@@ -100,5 +95,4 @@
   max-width: 90%;
   animation: slideInRight 0.4s ease-out;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1062;
 }
