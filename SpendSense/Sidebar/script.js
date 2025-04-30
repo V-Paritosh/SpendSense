@@ -161,9 +161,9 @@ async function profile() {
     modal
       .querySelector("#saveProfileBtn")
       .addEventListener("click", async () => {
-        const firstName = modal.querySelector("#firstName").value;
-        const lastName = modal.querySelector("#lastName").value;
-        const email = modal.querySelector("#email").value;
+        const firstName = toTitleCase(modal.querySelector("#firstName").value.trim());
+        const lastName = toTitleCase(modal.querySelector("#lastName").value.trim());
+        const email = modal.querySelector("#email").value.trim();
 
         if (!firstName || !lastName || !email) {
           showAlert("Please fill in all fields.", "warning");
@@ -182,6 +182,10 @@ async function profile() {
           if (error) {
             showAlert("Error updating profile: " + error.message, "danger");
           } else {
+            try { usersName(user.id); }
+            catch (error) {
+              console.error(error);
+            }
             showAlert("Profile updated!", "success");
             modalInstance.hide();
           }
