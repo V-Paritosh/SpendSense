@@ -66,3 +66,57 @@ async function setupSignOut() {
     }
   });
 }
+
+async function profile() {
+  const profileBtn = document.getElementById("profileBtn");
+  if (!profileBtn) {
+    console.error("Profile button not found.");
+    return;
+  }
+
+  profileBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    const modal = document.createElement("div");
+    modal.className = "modal fade";
+    modal.id = "editTransactionModal";
+    modal.innerHTML = `
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Transaction</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editTransactionForm">
+              <div class="mb-3">
+                <label for="editAmount" class="form-label">Amount</label>
+                <input type="number" class="form-control" id="editAmount" value="hi" step="0.01" required>
+              </div>
+              <div class="mb-3">
+                <label for="editCategory" class="form-label">Hi</label>
+                <input type="text" class="form-control" id="editCategory" value="Hi" required>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    const modalInstance = new bootstrap.Modal(modal);
+    modalInstance.show();
+
+    modal.addEventListener("hidden.bs.modal", () => {
+      modal.remove();
+    });
+
+    modal.querySelector("#saveChangesBtn").addEventListener("click", () => {
+      console.log("Save clicked!");
+    });
+  });
+}
