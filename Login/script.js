@@ -4,6 +4,7 @@ const SUPABASE_KEY =
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+document.addEventListener('DOMContentLoaded', function() {
 // Select elements
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
@@ -109,3 +110,4 @@ function showConfirmation(message, onConfirm, onCancel) {
     if (onCancel) onCancel();
   });
 }
+});

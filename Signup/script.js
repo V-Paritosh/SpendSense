@@ -4,6 +4,7 @@ const SUPABASE_KEY =
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+document.addEventListener('DOMContentLoaded', function() {
 // Select elements
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
@@ -44,6 +45,8 @@ signupBtn?.addEventListener("click", async (event) => {
       showAlert(insertError, "danger");
     } else {
       window.location.href = "../Login/index.html";
+      //TODO: fix this alert
+      showAlert("Account created please login now", "success")
     }
   }
 });
@@ -128,3 +131,4 @@ function showConfirmation(message, onConfirm, onCancel) {
     if (onCancel) onCancel();
   });
 }
+});
