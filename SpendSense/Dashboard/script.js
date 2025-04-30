@@ -155,10 +155,15 @@ async function fetchDebts(userId) {
     payButton.textContent = "Pay";
     payButton.onclick = () => {
       const paymentAmount = parseFloat(paymentInput.value);
-      if (isNaN(paymentAmount) || paymentAmount <= 0) {
+      if (isNaN(paymentAmount)) {
         showAlert("Please enter a valid payment amount", "warning");
         return;
       }
+
+      if (!validNum(paymentAmount)) {
+        return;
+      }
+
       if (paymentAmount > debt.amount) {
         showAlert("Payment amount cannot exceed debt amount", "warning");
         return;
@@ -474,6 +479,29 @@ async function displayCharts(userId) {
       },
     },
   });
+}
+
+function validNum(num) {
+  // Check if num is a number and finite
+  if (typeof num !== "number" || !isFinite(num)) {
+    showAlert("Invalid number.", "warning");
+    return false;
+  }
+
+  // Ensure it's non-negative and below some max
+  if (num < 0 || num >= 1e8) {
+    showAlert("Please enter a realistic cost value.", "warning");
+    return false;
+  }
+
+  // Ensure it has at most two decimal places
+  const parts = num.toString().split(".");
+  if (parts[1] && parts[1].length > 2) {
+    showAlert("Cost should have at most two decimal places.", "warning");
+    return false;
+  }
+
+  return true;
 }
 
 function showAlert(message, type = "primary", timeout = 3500) {

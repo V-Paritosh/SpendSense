@@ -14,8 +14,8 @@ const passwordToggleBtn = document.getElementById("passwordToggleBtn");
 signupBtn?.addEventListener("click", async (event) => {
   event.preventDefault();
 
-  const firstName = document.getElementById("firstName").value;
-  const lastName = document.getElementById("lastName").value;
+  const firstName = toTitleCase(document.getElementById("firstName").value);
+  const lastName = toTitleCase(document.getElementById("lastName").value);
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -64,6 +64,11 @@ passwordToggleBtn?.addEventListener("click", function () {
   }
 });
 
+// Function to convert string to Title Case
+function toTitleCase(str) {
+  return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 function showAlert(message, type = "primary", timeout = 3500) {
   const container = document.getElementById("alert-container");
 
@@ -93,4 +98,33 @@ function showAlert(message, type = "primary", timeout = 3500) {
       alert.remove();
     }, 400);
   }, timeout);
+}
+
+function showConfirmation(message, onConfirm, onCancel) {
+  const overlay = document.createElement("div");
+  overlay.className = "confirmation-overlay";
+
+  const box = document.createElement("div");
+  box.className = "confirm-box bg-white p-4 rounded-3";
+
+  box.innerHTML = `
+    <h5 class="mb-3">${message}</h5>
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="confirmBtn">Confirm</button>
+    </div>
+  `;
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  document.getElementById("confirmBtn").addEventListener("click", () => {
+    overlay.remove();
+    if (onConfirm) onConfirm();
+  });
+
+  document.getElementById("cancelBtn").addEventListener("click", () => {
+    overlay.remove();
+    if (onCancel) onCancel();
+  });
 }

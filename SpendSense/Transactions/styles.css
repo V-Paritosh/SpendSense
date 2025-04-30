@@ -70,17 +70,17 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3); /* Optional: darkens background */
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1055;
+  z-index: 1060 !important;
 }
 
 .confirm-box {
   min-width: 300px;
   max-width: 90%;
   animation: slideInRight 0.4s ease-out;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1060 !important;
 }
-

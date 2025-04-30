@@ -441,11 +441,19 @@ function validNum(num) {
 
 function showAlert(message, type = "primary", timeout = 3500) {
   const container = document.getElementById("alert-container");
+  const isModalOpen = !!document.querySelector(".modal.show");
 
-  // Create alert element
   const alert = document.createElement("div");
   alert.className = `alert alert-${type} alert-dismissible alert-slide-in mb-2`;
   alert.setAttribute("role", "alert");
+
+  // Apply fixed position & z-index if modal is open
+  if (isModalOpen) {
+    alert.style.position = "fixed";
+    alert.style.top = "1rem";
+    alert.style.right = "1rem";
+    alert.style.zIndex = "1065";
+  }
 
   const timerBar = document.createElement("div");
   timerBar.className = "alert-timer-bar";
@@ -459,14 +467,10 @@ function showAlert(message, type = "primary", timeout = 3500) {
   alert.appendChild(timerBar);
   container.appendChild(alert);
 
-  // Auto-dismiss with slide-out
   setTimeout(() => {
     alert.classList.remove("alert-slide-in");
     alert.classList.add("alert-slide-out");
-
-    setTimeout(() => {
-      alert.remove();
-    }, 400);
+    setTimeout(() => alert.remove(), 400);
   }, timeout);
 }
 
@@ -549,6 +553,7 @@ function showConfirmation(message, onConfirm, onCancel = () => {}) {
     }
   });
 }
+
 // Function to edit a transaction
 async function editTransaction(id, table) {
   try {
