@@ -20,7 +20,7 @@ signupBtn?.addEventListener("click", async (event) => {
   const password = document.getElementById("password").value;
 
   if (!firstName || !lastName || !email || !password) {
-    alert("Please enter all information");
+    showAlert("Please enter all information", "warning");
     return;
   }
 
@@ -30,7 +30,7 @@ signupBtn?.addEventListener("click", async (event) => {
   });
 
   if (signUpError) {
-    alert(signUpError);
+    showAlert(signUpError, "danger");
   } else {
     const { error: insertError } = await supabase.from("users").insert([
       {
@@ -41,7 +41,7 @@ signupBtn?.addEventListener("click", async (event) => {
     ]);
 
     if (insertError) {
-      alert(insertError);
+      showAlert(insertError, "danger");
     } else {
       window.location.href = "../Login/index.html";
     }
@@ -63,3 +63,34 @@ passwordToggleBtn?.addEventListener("click", function () {
     passwordToggleBtn.innerHTML = '<i class="bi bi-eye"></i>';
   }
 });
+
+function showAlert(message, type = "primary", timeout = 3500) {
+  const container = document.getElementById("alert-container");
+
+  // Create alert element
+  const alert = document.createElement("div");
+  alert.className = `alert alert-${type} alert-dismissible alert-slide-in mb-2`;
+  alert.setAttribute("role", "alert");
+
+  const timerBar = document.createElement("div");
+  timerBar.className = "alert-timer-bar";
+  timerBar.style.animationDuration = `${timeout}ms`;
+
+  alert.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close small" data-bs-dismiss="alert" aria-label="Close"></button>
+  `;
+
+  alert.appendChild(timerBar);
+  container.appendChild(alert);
+
+  // Auto-dismiss with slide-out
+  setTimeout(() => {
+    alert.classList.remove("alert-slide-in");
+    alert.classList.add("alert-slide-out");
+
+    setTimeout(() => {
+      alert.remove();
+    }, 400);
+  }, timeout);
+}

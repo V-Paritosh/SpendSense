@@ -1,13 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SpendSense</title>
-    <script>
-        window.location.href = "./Login/index.html";
-    </script>
-</head>
-<body>
-</body>
+
+    <!-- Favicons -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="./img/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href="./img/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="./img/favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./img/favicon/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content="SpendSense" />
+    <link rel="manifest" href="./img/favicon/site.webmanifest" />
+
+    <link href="./styles.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+  </head>
+
+  <body class="d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+     <main class="flex-fill">
+    <nav class="navbar navbar-expand-lg navbar-dark py-3">
+      <div class="container">
+        <a class="navbar-brand" href="../index.html">
+          <img
+            src="./img/SpendSense.png"
+            alt="SpendSense Logo"
+            width="50"
+            height="50"
+          />
+          $pend$ense
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul
+            class="navbar-nav ms-auto d-flex justify-content-center align-items-center"
+          >
+            <li class="nav-item">
+              <a class="nav-link text-white" href="../index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="../index.html">About Us</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="../index.html">Pricing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="../index.html">Demo</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="../index.html">FAQs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="./Login/index.html">
+                <button class="btn btn-login">
+                  Login
+                </button>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+      <!-- Hero Section -->
+      <section class="hero-section text-white text-center py-5">
+        <div class="container">
+          <h1 class="display-4 mb-3">Welcome to SpendSense</h1>
+          <p class="lead mb-4">
+            Take control of your finances with ease. Track spending, review
+            transactions, and monitor your net worth.
+          </p>
+          <a href="./Signup/index.html" class="btn btn-custom btn-lg"
+            >Get Started</a
+          >
+        </div>
+      </section>
+
+      <!-- Information Boxes -->
+      <div class="container py-4 info-div">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card h-100 shadow border-0 custom-border">
+              <div class="card-body text-center">
+                <h2 class="card-title">Smart Spending Insights</h2>
+                <p class="card-text">
+                  Our platform gives you insights to help you save money and
+                  make smarter financial decisions.
+                </p>
+                <!-- <a href="#" class="btn btn-outline">Learn More</a> -->
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100 shadow border-0 custom-border">
+              <div class="card-body text-center">
+                <h2 class="card-title">Easy Setup</h2>
+                <p class="card-text">
+                  Get started in minutes! Sync your accounts, set your goals,
+                  and start tracking your spending today.
+                </p>
+                <!-- <a href="#" class="btn btn-outline">Demo</a> -->
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100 shadow border-0 custom-border">
+              <div class="card-body text-center">
+                <h2 class="card-title">Track your Budget</h2>
+                <p class="card-text">
+                  Tell us how much you want to spend, and SpendSense will
+                  personalize your finances and do the math for you!
+                </p>
+                <!-- <a href="../Signup/index.html" class="btn btn-outline"
+                  >Signup</a
+                > -->
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100 shadow border-0 custom-border">
+              <div class="card-body text-center">
+                <h2 class="card-title">Get a Subscription</h2>
+                <p class="card-text">
+                  Buy our premium subscription for tailored insights and account
+                  syncing compatability.
+                </p>
+                <!-- <a href="#" class="btn btn-outline">Pricing</a> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </main>
+
+    <!-- Footer -->
+    <footer class="text-white text-center py-3">
+      <div class="container">© 2025 SpendSense. All rights reserved.</div>
+    </footer>
+  </body>
 </html>
