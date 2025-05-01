@@ -214,23 +214,14 @@ paymentBtn?.addEventListener("click", async (event) => {
     return;
   }
 
-  if (!validNum(paymentAmt)) {
-    paymentForm.reset();
+  if (!validNum(paymentAmt) || !validateDate(paymentDate)) {
     return;
   }
 
-  if (!validateDate(paymentDate)) {
-    return;
-  }
-
-  // Create a Date object with the local date
-  const localDate = new Date(paymentDate); // This will be in the local timezone
-  localDate.setHours(0, 0, 0, 0); // Set the time to midnight
-
-  console.log(localDate); // Check if the date is formatted properly
-
-  // Convert to ISO string before inserting (it will keep the local timezone time)
-  const formattedDate = localDate.toISOString();
+  const [year, month, day] = paymentDate.split("-").map(Number);
+  const localDate = new Date(year, month - 1, day); // create date in local time
+  const formattedDate = localDate.toISOString(); // send this to DB or backend
+  console.log("formattedDate", formattedDate);
 
   const { error: insertError } = await supabase.from("payments").insert([
     {
