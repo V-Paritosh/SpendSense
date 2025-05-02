@@ -198,35 +198,68 @@ async function profile() {
     modal
       .querySelector("#deleteAccountBtn")
       .addEventListener("click", async () => {
-        if (
-          !showConfirmation(
-            "Are you sure you want to delete your account? This action cannot be undone."
-          )
-        ) {
-          return;
-        }
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          // Delete user from users table
-          const { error } = await supabase
-            .from("users")
-            .delete()
-            .eq("id", user.id);
-          if (error) {
-            showAlert("Error deleting account: " + error.message, "danger");
-            return;
+        showConfirmation(
+          "Are you sure you want to delete your account? This action cannot be undone.",
+          async () => {
+            // Step 1: Get the current user
+            const {
+              data: { user },
+              error: userError,
+            } = await supabase.auth.getUser();
+
+            if (user && !userError) {
+              try {
+                // Step 2: Get the current session to retrieve access token
+                const {
+                  data: { session },
+                  error: sessionError,
+                } = await supabase.auth.getSession();
+
+                if (sessionError || !session) {
+                  throw new Error("Session not found.");
+                }
+
+                // Step 3: Call the Supabase Edge Function securely
+                const response = await fetch(
+                  "https://egzhuriimugvkjiauphl.supabase.co/functions/v1/delete-user",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      // Attach access token in Authorization header
+                      Authorization: `Bearer ${session.access_token}`,
+                    },
+                    // Send the user_id to the function
+                    body: JSON.stringify({ user_id: user.id }),
+                  }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                  throw new Error(
+                    data.error || "Failed to delete user account."
+                  );
+                }
+
+                // Step 4: Sign out the user after successful deletion
+                await supabase.auth.signOut();
+                localStorage.setItem(
+                  "deletedMessage",
+                  "Account deleted. Goodbye!"
+                );
+                window.location.href = "../../Login/index.html";
+              } catch (error) {
+                showAlert("Error deleting account: " + error.message, "danger");
+              }
+            } else {
+              showAlert("No user is logged in.", "warning");
+            }
           }
-          // Sign out the user
-          await supabase.auth.signOut();
-          showAlert("Account deleted. Goodbye!", "success");
-          window.location.href = "../../Login/index.html";
-        }
+        );
       });
   });
 }
-
 
 function toTitleCase(str) {
   return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());

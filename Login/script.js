@@ -82,9 +82,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }, timeout);
   }
 
-  const message = localStorage.getItem("signupMessage");
-  if (message) {
-    showAlert(message, "success");
+  const signupMessage = localStorage.getItem("signupMessage");
+  if (signupMessage) {
+    showAlert(signupMessage, "success");
     localStorage.removeItem("signupMessage"); // clear it after showing
+  }
+
+  const deletedMessage = localStorage.getItem("deletedMessage");
+  if (deletedMessage) {
+    showAlert(deletedMessage, "success");
+    localStorage.removeItem("deletedMessage"); // clear it after showing
   }
 });
