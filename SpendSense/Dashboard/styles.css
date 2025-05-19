@@ -25,6 +25,16 @@ body {
   overflow-y: auto;
 }
 
+.expand-toggle {
+  color: #33d985 ;          /* Bootstrap blue */
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.expand-toggle:hover {
+  color: #000;
+}
+
 @keyframes slideInRight {
   from {
     opacity: 0;

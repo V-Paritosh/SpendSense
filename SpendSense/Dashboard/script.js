@@ -12,6 +12,8 @@ async function getSession() {
     return null;
   }
   console.log("Session data:", data);
+  console.log(session.access_token);
+
   return data.session;
 }
 
@@ -28,7 +30,14 @@ async function usersName(userId) {
   }
 
   const title = document.getElementById("title");
-  title.textContent = `Welcome, ${userProfile[0].firstName} ${userProfile[0].lastName}`;
+  
+  const welcomeText = document.createTextNode("Welcome, ");
+  const firstName = createExpandableText(userProfile[0].firstName);
+  const space = document.createTextNode(" ");
+  const lastName = createExpandableText(userProfile[0].lastName);
+
+  title.replaceChildren();
+  title.append(welcomeText, firstName, space, lastName);
 }
 
 // Function to fetch and calculate net worth
@@ -81,8 +90,6 @@ async function fetchExpenses(userId) {
 
   if (expensesData.length == 0 || expensesData == null) {
     return;
-  } else {
-    expensesList.innerHTML = "";
   }
 
   const currentDate = new Date();
@@ -97,10 +104,16 @@ async function fetchExpenses(userId) {
     .slice(0, 10);
 
   expensePayments.forEach((expense) => {
-    let listItem = document.createElement("li");
-    listItem.textContent = `${expense.category}: $${formatNumber(
-      expense.amount
-    )}`;
+    const listItem = document.createElement("li");
+    listItem.classList.add("list-group-item");
+
+    const categorySpan = createExpandableText(expense.category, 35); // Limit to 35 chars
+    const amountSpan = document.createElement("span");
+    amountSpan.textContent = `: $${formatNumber(expense.amount)}`;
+
+    listItem.appendChild(categorySpan);
+    listItem.appendChild(amountSpan);
+
     expensesList.appendChild(listItem);
   });
 }
@@ -399,117 +412,6 @@ async function displayCharts(userId) {
     (sum, record) => sum + record.amount,
     0
   );
-
-  // Prepare data for the charts
-  const financialData = {
-    labels: ["Income", "Expenses"],
-    datasets: [
-      {
-        label: "Total Financial Overview",
-        data: [totalIncome, totalExpenses],
-        backgroundColor: ["#28a745", "#dc3545"], // Green for income, red for expenses
-        borderColor: ["#218838", "#c82333"],
-        borderWidth: 2,
-        hoverBackgroundColor: ["#218838", "#c82333"],
-        hoverBorderColor: ["#155724", "#721c24"],
-      },
-    ],
-  };
-
-  // Create Bar chart for Income and Expenses
-  const ctx = document.getElementById("financialChart").getContext("2d");
-  new Chart(ctx, {
-    type: "bar",
-    data: financialData,
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "top",
-          labels: {
-            font: {
-              size: 14,
-              weight: "bold",
-            },
-          },
-        },
-        tooltip: {
-          backgroundColor: "rgba(0,0,0,0.7)",
-          titleColor: "#fff",
-          bodyColor: "#fff",
-          borderColor: "#fff",
-          borderWidth: 1,
-          cornerRadius: 4,
-        },
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Financial Categories",
-            font: {
-              size: 14,
-              weight: "bold",
-            },
-          },
-        },
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: "Amount ($)",
-            font: {
-              size: 14,
-              weight: "bold",
-            },
-          },
-        },
-      },
-    },
-  });
-
-  // Prepare data for debts (Doughnut chart)
-  const debtLabels = debtData.map((debt) => debt.type);
-  const debtAmounts = debtData.map((debt) => debt.amount);
-
-  // Create Doughnut chart for debts
-  const debtCtx = document.getElementById("debtChart").getContext("2d");
-  new Chart(debtCtx, {
-    type: "doughnut",
-    data: {
-      labels: debtLabels,
-      datasets: [
-        {
-          data: debtAmounts,
-          backgroundColor: ["#fd7e14", "#17a2b8", "#6f42c1"], // Orange, Blue, Purple for debts
-          borderColor: "#fff",
-          borderWidth: 2,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "top",
-          labels: {
-            font: {
-              size: 14,
-              weight: "bold",
-            },
-          },
-        },
-        tooltip: {
-          backgroundColor: "rgba(0,0,0,0.7)",
-          titleColor: "#fff",
-          bodyColor: "#fff",
-          borderColor: "#fff",
-          borderWidth: 1,
-          cornerRadius: 4,
-        },
-      },
-    },
-  });
 }
 
 function validNum(num) {
@@ -624,6 +526,43 @@ function formatNumber(number, locale = "en-US") {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(number);
+}
+
+function createExpandableText(fullText, limit = 30) {
+  const span = document.createElement("span");
+
+  if (fullText.length <= limit) {
+    span.textContent = fullText;
+    return span;
+  }
+
+  const shortText = fullText.slice(0, limit);
+  const shortSpan = document.createElement("span");
+  shortSpan.textContent = shortText;
+
+  const moreSpan = document.createElement("span");
+  moreSpan.textContent = fullText.slice(limit);
+  moreSpan.style.display = "none";
+
+  const toggleLink = document.createElement("a");
+  toggleLink.href = "#";
+  toggleLink.textContent = "...";
+  toggleLink.style.marginLeft = "5px";
+  toggleLink.classList.add("expand-toggle");
+
+  toggleLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    const isExpanded = moreSpan.style.display === "inline";
+    moreSpan.style.display = isExpanded ? "none" : "inline";
+    toggleLink.textContent = isExpanded ? "..." : "Show less";
+    shortSpan.textContent = isExpanded ? shortText : fullText.slice(0, limit);
+  });
+
+  span.appendChild(shortSpan);
+  span.appendChild(moreSpan);
+  span.appendChild(toggleLink);
+
+  return span;
 }
 
 // Fetch and display charts on page load
