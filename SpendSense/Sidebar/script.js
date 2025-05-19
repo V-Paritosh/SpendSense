@@ -158,6 +158,10 @@ async function profile() {
       .addEventListener("submit", async (event) => {
         event.preventDefault();
 
+        const saveButton = modal.querySelector("#saveProfileBtn");
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving..."; // Optional: UX feedback
+
         const firstName = toTitleCase(
           modal.querySelector("#firstName").value.trim()
         );
@@ -168,31 +172,77 @@ async function profile() {
 
         if (!firstName || !lastName || !email) {
           showAlert("Please fill in all fields.", "warning");
+          saveButton.disabled = false;
+          saveButton.textContent = "Save Changes";
           return;
         }
 
         const {
           data: { user },
+          error: userError,
         } = await supabase.auth.getUser();
-        if (user) {
-          const { error } = await supabase
-            .from("users")
-            .update({ firstName, lastName, email })
-            .eq("id", user.id);
 
-          if (error) {
-            showAlert("Error updating profile: " + error.message, "danger");
-          } else {
-            try {
-              usersName(user.id);
-            } catch (error) {
-              console.error(error);
+        if (user && !userError) {
+          try {
+            const {
+              data: { session },
+              error: sessionError,
+            } = await supabase.auth.getSession();
+
+            if (sessionError || !session) {
+              throw new Error("Session not found.");
             }
+
+            const response = await fetch(
+              "https://egzhuriimugvkjiauphl.supabase.co/functions/v1/update-email",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({
+                  user_id: user.id,
+                  new_email: email,
+                }),
+              }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+              showAlert("Error updating email: " + result.error, "danger");
+              return;
+            }
+
+            const { error: profileError } = await supabase
+              .from("users")
+              .update({ firstName, lastName })
+              .eq("id", user.id);
+
+            if (profileError) {
+              showAlert(
+                "Error updating profile: " + profileError.message,
+                "danger"
+              );
+              return;
+            }
+
             showAlert("Profile updated!", "success");
             modalInstance.hide();
+          } catch (error) {
+            showAlert("Error updating account: " + error.message, "danger");
+          } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = "Save Changes";
           }
+        } else {
+          showAlert("No user is logged in.", "warning");
+          saveButton.disabled = false;
+          saveButton.textContent = "Save Changes";
         }
       });
+
 
     // Add delete account logic
     modal
